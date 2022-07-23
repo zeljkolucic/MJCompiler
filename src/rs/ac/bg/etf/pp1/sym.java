@@ -15,7 +15,7 @@ public class sym {
 	
 	// Operators
 	public static final int PLUS = 6;
-	public static final int EQUAL = 7;
+	public static final int EQUALS = 7;
 	public static final int COMMA = 8;
 	public static final int SEMI = 9;
 	public static final int LPAREN = 10;
