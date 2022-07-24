@@ -43,14 +43,19 @@ scan with {:
 :}
 
 
-terminal EQUAL, NOT_EQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, PLUS, MINUS, MUL, DIV, MOD;
+terminal PROGRAM, READ, PRINT, CONST;
+terminal IF, ELSE, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
+terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
+terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, BOOL_CONST, CHAR_CONST, NUM_CONST, IDENT; 
 
+nonterminal Program;
 nonterminal RelOp, AddOp, MulOp;
 
+Program ::=	(Program) PROGRAM IDENT LBRACE RBRACE;
 
 RelOp ::=	(RelOpEqual) EQUAL
 			|
-			(RelOpNotEqual) NOT_EQUAL
+			(RelOpNotEqual) NOTEQUAL
 			|
 			(RelOpLessOrEqual) LESS_OR_EQUAL
 			|
@@ -72,3 +77,4 @@ MulOp ::= 	(MulOpMul) MUL
  	   		|
  	   		(MulOpMod) MOD
  	   		;
+ 	   		
