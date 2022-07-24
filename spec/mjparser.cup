@@ -1,0 +1,29 @@
+
+
+terminal EQUAL, NOT_EQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, PLUS, MINUS, MUL, DIV, MOD;
+nonterminal RelOp, AddOp, MulOp;
+
+RelOp ::=	(RelOpEqual) EQUAL
+			|
+			(RelOpNotEqual) NOT_EQUAL
+			|
+			(RelOpLessOrEqual) LESS_OR_EQUAL
+			|
+			(RelOpGreaterOrEqual) GREATER_OR_EQUAL
+			|
+			(RelOpLess) LESS
+			|
+			(RelOpGreater) GREATER
+			;
+
+AddOp ::= 	(AddOpPlus) PLUS
+	  		|
+	  		(AddOpMinus) MINUS
+	  		;
+	  
+MulOp ::= 	(MulOpMul) MUL
+ 	   	   	|
+ 	   		(MulOpDiv) DIV
+ 	   		|
+ 	   		(MulOpMod) MOD
+ 	   		;
