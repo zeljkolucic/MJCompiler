@@ -1,1 +1,9 @@
-program MJProgram { }
+program MJProgram 
+	const int x = 5; bool y;
+{ 
+	void f()
+		int x;
+	{
+		
+	}
+}

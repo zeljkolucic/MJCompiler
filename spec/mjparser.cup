@@ -48,10 +48,104 @@ terminal IF, ELSE, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
 terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, BOOL_CONST, CHAR_CONST, NUM_CONST, IDENT; 
 
-nonterminal Program;
-nonterminal RelOp, AddOp, MulOp;
+nonterminal Program, ProgramDeclList;
+nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, MethodVarDeclList; 
+nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, MultipleFormalParams, FormalParamDecl;
+nonterminal AssignOp, RelOp, AddOp, MulOp;
 
-Program ::=	(Program) PROGRAM IDENT LBRACE RBRACE;
+
+/* Program */
+
+Program ::=	(Program) PROGRAM IDENT ProgramDeclList LBRACE MethodDeclList RBRACE;
+
+ProgramDeclList ::= (ProgramDecls) DeclList
+					|
+					(NoProgramDecl) /* epsilon */
+					;
+
+/* Variable Declarations */
+
+DeclList ::=	(MultipleDeclarations) DeclList Decl
+				|
+				(SingleDecl) Decl
+				;
+				
+Decl ::=	(ConstDeclarations) CONST Type:constType ConstDeclaration
+			|
+			(VarDeclarations) Type:varType VarDeclaration
+			;
+			
+VarDeclaration ::=	(MultipleVarDecls) MultipleVarDeclarations VarDecl SEMI
+					|
+					(SingleVarDecl) VarDecl SEMI
+					;
+					
+MultipleVarDeclarations ::=	(MultipleCommaSeparatedVarDecls) MultipleVarDeclarations VarDecl COMMA
+							|
+							(FirstVarDecl) VarDecl COMMA
+							;
+							
+VarDecl ::=	(VarDecl) IDENT:varName;
+
+ConstDeclaration ::=	(MultipleConstDecls) MultipleConstDeclarations ConstDecl SEMI
+						|
+						(SingleConstDecl) ConstDecl SEMI
+						;
+					
+MultipleConstDeclarations ::=	(MultipleCommaSeparatedConstDecls) MultipleConstDeclarations ConstDecl COMMA
+								|
+								(FirstConstDecl) ConstDecl COMMA
+								;
+
+ConstDecl ::= 	(ConstDecl) IDENT:constName ASSIGN Const:constValue;	
+
+Const ::=	(BoolConst) BOOL_CONST:bool
+			|
+			(CharConst) CHAR_CONST
+			|
+			(NumConst) NUM_CONST
+			;			
+
+Type ::=	(Type) IDENT:typeName;
+
+
+/* Method Declarations */
+
+MethodDeclList ::=	(MethodDeclarations) MethodDeclList MethodDecl
+					|
+					(NoMethodDecl) /* epsilon */
+					;
+					
+MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN MethodVarDeclList LBRACE /* StatementList */ RBRACE;
+
+MethodVarDeclList ::=	(MethodVarDeclList) Type:varType VarDeclaration;
+
+ReturnType ::=	(RetType) Type
+				|
+				(RetVoid) VOID
+				;
+
+FormPars ::=	(FormParams) FormalParamList
+				|
+				(NoFormParam) /* epsilon */
+				;		
+				
+FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
+					|
+					(SingleFormalParamDecl) FormalParamDecl
+					;
+					
+MultipleFormalParams ::=	(MultipleCommaSeparatedFormalParams) MultipleFormalParams COMMA FormalParamDecl
+							|
+							(FirstFormalParam) FormalParamDecl COMMA
+							;			
+					
+FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;			
+
+
+/* Operators */
+
+AssignOp ::=	(AssignOp) ASSIGN;											
 
 RelOp ::=	(RelOpEqual) EQUAL
 			|
