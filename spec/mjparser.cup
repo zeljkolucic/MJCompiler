@@ -50,7 +50,9 @@ terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET,
 
 nonterminal Program, ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, MethodVarDeclList; 
-nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, MultipleFormalParams, FormalParamDecl;
+nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
+nonterminal Statement;
+nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
 nonterminal AssignOp, RelOp, AddOp, MulOp;
 
 
@@ -116,7 +118,7 @@ MethodDeclList ::=	(MethodDeclarations) MethodDeclList MethodDecl
 					(NoMethodDecl) /* epsilon */
 					;
 					
-MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN MethodVarDeclList LBRACE /* StatementList */ RBRACE;
+MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN MethodVarDeclList LBRACE Statement RBRACE;
 
 MethodVarDeclList ::=	(MethodVarDeclList) Type:varType VarDeclaration;
 
@@ -133,14 +135,66 @@ FormPars ::=	(FormParams) FormalParamList
 FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
 					|
 					(SingleFormalParamDecl) FormalParamDecl
-					;
+					;							
 					
-MultipleFormalParams ::=	(MultipleCommaSeparatedFormalParams) MultipleFormalParams COMMA FormalParamDecl
-							|
-							(FirstFormalParam) FormalParamDecl COMMA
-							;			
-					
-FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;			
+FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;
+
+
+
+/* Statements */
+
+Statement ::=	(BreakStatement) BREAK SEMI
+				|
+				(ContinueStatement) CONTINUE SEMI
+				|
+				(ReturnStatement) RETURN SEMI
+				|
+				(ReturnExprStatement) RETURN Expr SEMI
+				|
+				;
+
+Designator ::=	(DesignatorIdent) IDENT 
+				|
+				(DesignatorIdentArray) IDENT LBRACKET Expr RBRACKET
+				;		
+				
+Expr ::=	(AddOpTermExpr) Expr AddOp Term
+			|
+			(NegTermExpr) MINUS Term
+			|
+			(PosTermExpr) Term
+			;
+			
+Term ::=	(Term) Factor MulFacList;
+
+MulFacList ::= 	(MulOpFactor) MulFacList MulOp Factor 
+				|
+				(NoMulOpFactor) /* epsilon */
+				;
+						
+			
+Factor ::= 	(ConstFactor) Const
+			|
+			(ExprFactor) LPAREN Expr RPAREN
+			|
+			(NewArray) NEW Type:arrayType LBRACKET Expr RBRACKET
+			|
+			(Var) Designator
+			|
+			(FunctionCall) Designator LPAREN ActualPars RPAREN
+			|
+			(NewObj) NEW Type:objType
+			;	
+			
+ActualPars ::=	(ActualPararameters) ActualParamList
+				|
+				(NoActualPars) /* epsilon */
+				;					
+				
+ActualParamList ::=	(ActualParams) ActualParamList COMMA Expr
+					|
+					(ActualParam) Expr
+					;							
 
 
 /* Operators */

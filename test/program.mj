@@ -4,6 +4,7 @@ program MJProgram
 	void f()
 		int x;
 	{
-		
+		// continue;
+		return new char[(-3 * 8) * 3 + 4];
 	}
 }
