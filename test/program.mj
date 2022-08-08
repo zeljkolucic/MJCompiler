@@ -5,6 +5,8 @@ program MJProgram
 		int x;
 	{
 		// continue;
-		return new char[(-3 * 8) * 3 + 4];
+		// return new char[(-3 * 8) * 3 + 4];
+		// read(x);
+		x = 3;
 	}
 }

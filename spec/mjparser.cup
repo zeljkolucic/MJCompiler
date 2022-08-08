@@ -51,7 +51,7 @@ terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET,
 nonterminal Program, ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, MethodVarDeclList; 
 nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
-nonterminal Statement;
+nonterminal Statement, DesignatorStatement;
 nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
 nonterminal AssignOp, RelOp, AddOp, MulOp;
 
@@ -143,15 +143,25 @@ FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;
 
 /* Statements */
 
-Statement ::=	(BreakStatement) BREAK SEMI
+Statement ::=	(DesignatorStmt) DesignatorStatement SEMI
+				|	
+				(ReadStatement) READ LPAREN Designator RPAREN SEMI
+				|
+				(BreakStatement) BREAK SEMI
 				|
 				(ContinueStatement) CONTINUE SEMI
 				|
 				(ReturnStatement) RETURN SEMI
 				|
 				(ReturnExprStatement) RETURN Expr SEMI
-				|
 				;
+				
+DesignatorStatement ::=	(DesignatorEqualsStatement) Designator AssignOp Expr
+						|
+						(DesignatorIncStatement) Designator INC
+						|
+						(DesignatorDecStatement) Designator DEC
+						;				
 
 Designator ::=	(DesignatorIdent) IDENT 
 				|
