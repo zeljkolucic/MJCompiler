@@ -152,6 +152,10 @@ Statement ::=	(DesignatorStmt) DesignatorStatement SEMI
 				|	
 				(ReadStatement) READ LPAREN Designator RPAREN SEMI
 				|
+				(PrintStatement) PRINT LPAREN Expr RPAREN SEMI
+				|
+				(PrintStatementNumConst) PRINT LPAREN Expr COMMA NUM_CONST RPAREN SEMI 
+				|
 				(BreakStatement) BREAK SEMI
 				|
 				(ContinueStatement) CONTINUE SEMI

@@ -8,5 +8,6 @@ program MJProgram
 		return new char[(-3 * 8) * 3 + 4];
 		read(x);
 		x = 3;
+		print(3 + 3, 2);
 	}
 }
