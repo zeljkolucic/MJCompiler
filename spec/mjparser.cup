@@ -184,6 +184,8 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(MatchedStatement) IF LPAREN Condition RPAREN Matched ELSE Matched
 				|
+				(DoWhileStatement) DO Matched WHILE LPAREN Condition RPAREN SEMI
+				|
 				(Stmt) LBRACE StatementList RBRACE
 				;
 				

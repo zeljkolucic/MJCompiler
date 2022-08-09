@@ -4,6 +4,11 @@ program MJProgram
 	void f()
 		int z; int a;
 	{
+		do {
+			x++;
+			z = z + 3;
+		} while(x < 3);
+	
 		continue;
 		return new char[(-3 * 8) * 3 + 4];
 		if (x == 3) {
