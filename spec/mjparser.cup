@@ -52,7 +52,7 @@ terminal Integer NUM_CONST;
 terminal String IDENT;
 
 nonterminal Program, ProgramDeclList;
-nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, MethodVarDeclList; 
+nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
 nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Condition, CondTerm, CondFact;
@@ -81,6 +81,11 @@ Decl ::=	(ConstDeclarations) CONST Type:constType ConstDeclaration
 			|
 			(VarDeclarations) Type:varType VarDeclaration
 			;
+			
+VarDeclList ::=	(VarDeclarationsList) VarDeclList Type:varType VarDeclaration
+				|
+				/* epsilon */
+				;			
 			
 VarDeclaration ::=	(MultipleVarDecls) MultipleVarDeclarations VarDecl SEMI
 					|
@@ -123,9 +128,7 @@ MethodDeclList ::=	(MethodDeclarations) MethodDeclList MethodDecl
 					(NoMethodDecl) /* epsilon */
 					;
 					
-MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN MethodVarDeclList LBRACE StatementList RBRACE;
-
-MethodVarDeclList ::=	(MethodVarDeclList) Type:varType VarDeclaration;
+MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN VarDeclList LBRACE StatementList RBRACE;
 
 ReturnType ::=	(RetType) Type
 				|
