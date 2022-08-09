@@ -2,10 +2,15 @@ program MJProgram
 	const int x = 5; bool y;
 { 
 	void f()
-		int x;
+		int z; int a;
 	{
 		continue;
 		return new char[(-3 * 8) * 3 + 4];
+		if (x == 3) {
+			x = 4;
+			a = false;
+		} else { x = 3; }
+		
 		read(x);
 		x = 3;
 		print(3 + 3, 2);

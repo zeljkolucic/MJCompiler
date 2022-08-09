@@ -46,12 +46,17 @@ scan with {:
 terminal PROGRAM, READ, PRINT, CONST;
 terminal IF, ELSE, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
-terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, BOOL_CONST, CHAR_CONST, NUM_CONST, IDENT; 
+terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, BOOL_CONST, CHAR_CONST; 
+
+terminal Integer NUM_CONST;
+terminal String IDENT;
 
 nonterminal Program, ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, MethodVarDeclList; 
 nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
+nonterminal Condition, CondTerm, CondFact;
+nonterminal Matched, Unmatched;
 nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
 nonterminal AssignOp, RelOp, AddOp, MulOp;
 
@@ -147,8 +152,18 @@ StatementList ::=	(Statements) StatementList Statement
 					|
 					(NoStmt) /* epsilon */
 					;
+					
+Statement ::= 	(MatchedStmt) Matched
+				|
+				(UnmatchedStmt) Unmatched
+				;
+				
+Unmatched ::=	(UnmatchedIf) IF LPAREN Condition RPAREN Statement
+				|
+				(UnmatchedIfElse) IF LPAREN Matched RPAREN ELSE Unmatched
+				;									
 
-Statement ::=	(DesignatorStmt) DesignatorStatement SEMI
+Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|	
 				(ReadStatement) READ LPAREN Designator RPAREN SEMI
 				|
@@ -163,6 +178,10 @@ Statement ::=	(DesignatorStmt) DesignatorStatement SEMI
 				(ReturnStatement) RETURN SEMI
 				|
 				(ReturnExprStatement) RETURN Expr SEMI
+				|
+				(MatchedStatement) IF LPAREN Condition RPAREN Matched ELSE Matched
+				|
+				(Stmt) LBRACE StatementList RBRACE
 				;
 				
 DesignatorStatement ::=	(DesignatorEqualsStatement) Designator AssignOp Expr
@@ -213,7 +232,25 @@ ActualPars ::=	(ActualPararameters) ActualParamList
 ActualParamList ::=	(ActualParams) ActualParamList COMMA Expr
 					|
 					(ActualParam) Expr
-					;							
+					;
+					
+/* Conditions */
+
+Condition ::=	(MultipleCondTerms) Condition OR CondTerm
+				|
+				(SingleCondTerm) CondTerm
+				;
+
+
+CondTerm ::=	(MultipleCondFacts) CondTerm AND CondFact
+				|
+				(SingleCondFact) CondFact
+				; 
+
+CondFact ::=	(CondFactExpr) Expr
+				|
+				(CondFactRelOpExpr) Expr RelOp Expr
+				; 												
 
 
 /* Operators */
