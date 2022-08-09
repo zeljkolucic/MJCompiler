@@ -194,6 +194,8 @@ DesignatorStatement ::=	(DesignatorEqualsStatement) Designator AssignOp Expr
 						(DesignatorIncStatement) Designator INC
 						|
 						(DesignatorDecStatement) Designator DEC
+						|
+						(DesignatorFunctionCall) Designator LPAREN ActualPars RPAREN
 						;				
 
 Designator ::=	(DesignatorIdent) IDENT 

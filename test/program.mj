@@ -8,6 +8,8 @@ program MJProgram
 			x++;
 			z = z + 3;
 		} while(x < 3);
+		
+		functionCall(x, 3);
 	
 		continue;
 		return new char[(-3 * 8) * 3 + 4];
