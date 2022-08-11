@@ -91,11 +91,17 @@ VarDeclList ::=	(VarDeclarationsList) VarDeclList Type:varType VarDeclaration
 VarDeclaration ::=	(MultipleVarDecls) MultipleVarDeclarations VarDecl SEMI
 					|
 					(SingleVarDecl) VarDecl SEMI
+					|
+					(VarDeclSemiError) error SEMI:l
+					{: parser.report_error("Izvrsen oporavak do ; na liniji " + lleft, null); :}
 					;
 					
 MultipleVarDeclarations ::=	(MultipleCommaSeparatedVarDecls) MultipleVarDeclarations VarDecl COMMA
 							|
 							(FirstVarDecl) VarDecl COMMA
+							|
+							(VarDeclCommaError) error COMMA:l
+							{: parser.report_error("Izvrsen oporavak do , na liniji " + lleft, null); :}
 							;
 							
 VarDecl ::=	(VarDecl) IDENT:varName;
@@ -103,11 +109,17 @@ VarDecl ::=	(VarDecl) IDENT:varName;
 ConstDeclaration ::=	(MultipleConstDecls) MultipleConstDeclarations ConstDecl SEMI
 						|
 						(SingleConstDecl) ConstDecl SEMI
+						|
+						(ConstDeclSemiError) error SEMI:l
+						{: parser.report_error("Izvrsen oporavak do ; na liniji " + lleft, null); :} 
 						;
 					
 MultipleConstDeclarations ::=	(MultipleCommaSeparatedConstDecls) MultipleConstDeclarations ConstDecl COMMA
 								|
 								(FirstConstDecl) ConstDecl COMMA
+								|
+								(ConstDeclCommaError) error COMMA:l
+								{: parser.report_error("Izvrsen oporavak do , na liniji " + lleft, null); :}
 								;
 
 ConstDecl ::= 	(ConstDecl) IDENT:constName ASSIGN Const:constValue;	
@@ -143,10 +155,14 @@ FormPars ::=	(FormParams) FormalParamList
 				
 FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
 					|
-					(SingleFormalParamDecl) FormalParamDecl
+					(SingleFormalParamDecl) FormalParamDecl 
 					;	
 					
-FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;
+FormalParamDecl ::=	(FormalParamDeclaration) Type:paramType IDENT:paramName
+					|
+					(FormalParamDeclError) error:l
+					{: parser.report_error("Izvrsen oporavak na liniji " + lleft, null); :} 
+					;
 
 Parameters ::=	(FormParametersOnly) FormPars
 				|
@@ -185,6 +201,9 @@ Unmatched ::=	(UnmatchedIf) IF LPAREN Condition RPAREN Statement
 
 Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|	
+				(DesignatorStmtError) error SEMI:l
+				{: parser.report_error("Izvrsen oporavak do ; na liniji " + lleft, null);  :}
+				|
 				(ReadStatement) READ LPAREN Designator RPAREN SEMI
 				|
 				(PrintStatement) PRINT LPAREN Expr RPAREN SEMI
@@ -206,14 +225,15 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				(Stmt) LBRACE StatementList RBRACE
 				;
 				
-DesignatorStatement ::=	(DesignatorEqualsStatement) Designator Assignop Expr
+DesignatorStatement ::=	(DesignatorAssignStatement) Designator Assignop Expr
 						|
 						(DesignatorIncStatement) Designator INC
 						|
 						(DesignatorDecStatement) Designator DEC
 						|
 						(DesignatorFunctionCall) Designator LPAREN ActualPars RPAREN
-						;				
+						;
+							
 
 Designator ::=	(DesignatorIdent) IDENT 
 				|
@@ -263,6 +283,9 @@ ActualParamList ::=	(ActualParams) ActualParamList COMMA Expr
 Condition ::=	(MultipleCondTerms) Condition OR CondTerm
 				|
 				(SingleCondTerm) CondTerm
+				|
+				(ErrorCond) error:l
+				{: parser.report_error("Izvrsen oporavak do ) na liniji " + lleft, null); :}
 				;
 
 

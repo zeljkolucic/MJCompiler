@@ -1,7 +1,7 @@
 program MJProgram 
-	const int x = 5; bool y;
+	const int x = , anotherConstant = 5; bool y;
 { 
-	void f(int x = 3, bool z = false)
+	void f(int x, z, bool flag)
 		int z; int a;
 	{
 		do {
@@ -9,18 +9,18 @@ program MJProgram
 			z = z + 3;
 		} while(x < 3);
 		
+		x = 3 + ;
+		
+		
+		
 		functionCall(x, 3);
 	
 		continue;
 		return new char[(-3 * 8) * 3 + 4];
-		if (x == 3) {
+		if (x == ) {
 			x = 4;
 			a = false;
 		} else { x = 3; }
-		
-		read(x);
-		x = 3;
-		print(3 + 3, 2);
 		
 		
 		if(if (x > 3) return; else x++;) else if (x > 3) { }
