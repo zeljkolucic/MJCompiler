@@ -1,7 +1,7 @@
 program MJProgram 
 	const int x = 5; bool y;
 { 
-	void f()
+	void f(int x = 3, bool z = false)
 		int z; int a;
 	{
 		do {
@@ -21,5 +21,11 @@ program MJProgram
 		read(x);
 		x = 3;
 		print(3 + 3, 2);
+		
+		
+		if(if (x > 3) return; else x++;) else if (x > 3) { }
+		
+		if(x > 3) if(y > 4) break; return;
+		
 	}
 }

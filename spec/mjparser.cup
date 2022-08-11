@@ -59,6 +59,7 @@ nonterminal Condition, CondTerm, CondFact;
 nonterminal Matched, Unmatched;
 nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
 nonterminal AssignOp, RelOp, AddOp, MulOp;
+nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
 
 /* Program */
@@ -128,7 +129,7 @@ MethodDeclList ::=	(MethodDeclarations) MethodDeclList MethodDecl
 					(NoMethodDecl) /* epsilon */
 					;
 					
-MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN FormPars RPAREN VarDeclList LBRACE StatementList RBRACE;
+MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN Parameters RPAREN VarDeclList LBRACE StatementList RBRACE;
 
 ReturnType ::=	(RetType) Type
 				|
@@ -143,11 +144,27 @@ FormPars ::=	(FormParams) FormalParamList
 FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
 					|
 					(SingleFormalParamDecl) FormalParamDecl
-					;							
+					;	
 					
 FormalParamDecl ::=	(FormatParamDecl) Type:paramType IDENT:paramName;
 
+Parameters ::=	(FormParametersOnly) FormPars
+				|
+				(OptionalArgumentsOnly) OptArgsOnly
+				;			
+						
 
+OptArgsOnly ::=	(OptArgumentsOnly) OptArgsOnly COMMA OptArg
+				|
+				(SingleOptArg) OptArg
+				;
+				
+OptArgs ::=	(OptArguments) OptArgs COMMA OptArg
+			|
+			(NoOptArgs) /* epsilon */
+			;				
+
+OptArg ::=	(OptArg) Type:paramType IDENT:paramName ASSIGN Const; 
 
 /* Statements */
 
