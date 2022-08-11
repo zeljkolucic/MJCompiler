@@ -58,7 +58,7 @@ nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Condition, CondTerm, CondFact;
 nonterminal Matched, Unmatched;
 nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
-nonterminal AssignOp, RelOp, AddOp, MulOp;
+nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
 
@@ -206,7 +206,7 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				(Stmt) LBRACE StatementList RBRACE
 				;
 				
-DesignatorStatement ::=	(DesignatorEqualsStatement) Designator AssignOp Expr
+DesignatorStatement ::=	(DesignatorEqualsStatement) Designator Assignop Expr
 						|
 						(DesignatorIncStatement) Designator INC
 						|
@@ -220,7 +220,7 @@ Designator ::=	(DesignatorIdent) IDENT
 				(DesignatorIdentArray) IDENT LBRACKET Expr RBRACKET
 				;		
 				
-Expr ::=	(AddOpTermExpr) Expr AddOp Term
+Expr ::=	(AddOpTermExpr) Expr Addop Term
 			|
 			(NegTermExpr) MINUS Term
 			|
@@ -229,9 +229,9 @@ Expr ::=	(AddOpTermExpr) Expr AddOp Term
 			
 Term ::=	(Term) Factor MulFacList;
 
-MulFacList ::= 	(MulOpFactor) MulFacList MulOp Factor 
+MulFacList ::= 	(MulOpFactor) MulFacList Mulop Factor 
 				|
-				(NoMulOpFactor) /* epsilon */
+				(NoMulopFactor) /* epsilon */
 				;
 						
 			
@@ -273,36 +273,36 @@ CondTerm ::=	(MultipleCondFacts) CondTerm AND CondFact
 
 CondFact ::=	(CondFactExpr) Expr
 				|
-				(CondFactRelOpExpr) Expr RelOp Expr
+				(CondFactRelOpExpr) Expr Relop Expr
 				; 												
 
 
 /* Operators */
 
-AssignOp ::=	(AssignOp) ASSIGN;											
+Assignop ::=	(Assignop) ASSIGN;											
 
-RelOp ::=	(RelOpEqual) EQUAL
+Relop ::=	(RelopEqual) EQUAL
 			|
-			(RelOpNotEqual) NOTEQUAL
+			(RelopNotEqual) NOTEQUAL
 			|
-			(RelOpLessOrEqual) LESS_OR_EQUAL
+			(RelopLessOrEqual) LESS_OR_EQUAL
 			|
-			(RelOpGreaterOrEqual) GREATER_OR_EQUAL
+			(RelopGreaterOrEqual) GREATER_OR_EQUAL
 			|
-			(RelOpLess) LESS
+			(RelopLess) LESS
 			|
-			(RelOpGreater) GREATER
+			(RelopGreater) GREATER
 			;
 
-AddOp ::= 	(AddOpPlus) PLUS
+Addop ::= 	(AddopPlus) PLUS
 	  		|
-	  		(AddOpMinus) MINUS
+	  		(AddopMinus) MINUS
 	  		;
 	  
-MulOp ::= 	(MulOpMul) MUL
+Mulop ::= 	(MulopMul) MUL
  	   	   	|
- 	   		(MulOpDiv) DIV
+ 	   		(MulopDiv) DIV
  	   		|
- 	   		(MulOpMod) MOD
+ 	   		(MulopMod) MOD
  	   		;
  	   		
