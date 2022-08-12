@@ -53,7 +53,7 @@ terminal String IDENT;
 
 nonterminal ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
-nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
+nonterminal MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Condition, CondTerm, CondFact;
 nonterminal Matched, Unmatched;
@@ -62,6 +62,7 @@ nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type;
 
 /* Program */
 
