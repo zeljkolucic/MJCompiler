@@ -51,7 +51,7 @@ terminal COLON, SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET,
 terminal Integer NUM_CONST;
 terminal String IDENT;
 
-nonterminal Program, ProgramDeclList;
+nonterminal ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
 nonterminal Type, MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
@@ -61,10 +61,13 @@ nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamL
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program;
 
 /* Program */
 
-Program ::=	(Program) PROGRAM IDENT ProgramDeclList LBRACE MethodDeclList RBRACE;
+Program ::=	(Program) PROGRAM ProgName:p ProgramDeclList LBRACE MethodDeclList RBRACE;
+
+ProgName ::=	(ProgName) IDENT:programName;
 
 ProgramDeclList ::= (ProgramDecls) DeclList
 					|

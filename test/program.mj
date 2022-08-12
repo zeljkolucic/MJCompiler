@@ -1,17 +1,13 @@
 program MJProgram 
-	const int x = , anotherConstant = 5; bool y;
+	bool y;
 { 
-	void f(int x, z, bool flag)
+	void f(int x, bool flag)
 		int z; int a;
 	{
 		do {
 			x++;
 			z = z + 3;
 		} while(x < 3);
-		
-		x = 3 + ;
-		
-		
 		
 		functionCall(x, 3);
 	
@@ -21,7 +17,6 @@ program MJProgram
 			x = 4;
 			a = false;
 		} else { x = 3; }
-		
 		
 		if(if (x > 3) return; else x++;) else if (x > 3) { }
 		
