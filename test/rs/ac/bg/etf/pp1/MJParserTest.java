@@ -39,7 +39,7 @@ public class MJParserTest {
 	        Symbol s = p.parse();  //pocetak parsiranja
 	        
 	        Program prog = (Program)(s.value); 
-	        Tab.init();
+	        SymbolTable.init();
 			// ispis sintaksnog stabla
 			log.info(prog.toString(""));
 			log.info("===================================");					

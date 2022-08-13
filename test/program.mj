@@ -1,5 +1,5 @@
 program MJProgram 
-	//bool y;
+	const bool y = false;
 { 
 	void f(int x, bool flag)
 		int z; int a;
@@ -18,7 +18,7 @@ program MJProgram
 			a = false;
 		} else { x = 3; }
 		
-		if(if (x > 3) return; else x++;) else if (x > 3) { }
+		//if(if (x > 3) return; else x++;) else if (x > 3) { }
 		
 		if(x > 3) 
 			if(y > 4) break; 

@@ -1,5 +1,6 @@
 package rs.ac.bg.etf.pp1;
 
+import java.util.*;
 import org.apache.log4j.Logger;
 
 import rs.ac.bg.etf.pp1.ast.*;
@@ -33,6 +34,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	private int nVars;
 	
+	private List<ConstDecl> constDeclarations = new LinkedList<>();
+	
 	/**
 	 * Dodaje objektni cvor u tabelu simbola
 	 * i cuva referencu na njega. Otvara novi opseg
@@ -63,7 +66,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	/**
 	 * Ispituje da li se dati tip vec nalazi u tabeli
 	 * simbola, i ukoliko se ne nalazi to znaci da 
-	 * nije validan tip. Ukoliko se nalazi, a tip 
+	 * nije validan tip. Ukoliko se nalazi, a vrsta 
 	 * tog cvora nije Type, to znaci da je u nekom 
 	 * ugnjezdenijem opsegu korisnik koristio kljucnu 
 	 * rijec za naziv promjenljive.
@@ -75,36 +78,76 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		if(typeNode == Tab.noObj) {
 			errorDetected = true;
 			type.struct = Tab.noType;
-			report_error("Nije pronadjen tip " + typeName + " u tabeli simbola!", null);
+			report_error("Greska (" + type.getLine() + "): Nije pronadjen tip " + typeName + " u tabeli simbola!", null);
 		} else {
 			if (typeNode.getKind() == Obj.Type) {
 				type.struct = typeNode.getType();
 			} else {
 				errorDetected = true;
 				type.struct = Tab.noType;
-				report_error("Greska: Ime " + type.getTypeName() + " ne predstavlja tip!", type);
+				report_error("Greska (" + type.getLine() + "):  Ime " + type.getTypeName() + " ne predstavlja tip!", null);
 			}
 		}
 	}
 	
+	/**
+	 * Obradjuje deklaracije konstanti odvojene zapetama.
+	 * Dodaje deklarisanu konstantu u tabelu simbola, ispituje 
+	 * tip pojedinacne konstante i upisuje njenu vrednost u 
+	 * `adr` polje objektnog cvora.  
+	 */
 	public void visit(ConstDeclarations constDeclarations) {
+		Struct type = constDeclarations.getType().struct;
+		for(ConstDecl constDeclaration: this.constDeclarations) {
+			String name = constDeclaration.getConstName();
+			
+			Obj constNode = Tab.insert(Obj.Con, name, type);
+			Const constValue = constDeclaration.getConst();
+			
+			if(constValue instanceof NumConst) {
+				if(!type.assignableTo(Tab.intType)) {
+					errorDetected = true;
+					report_error("Greska (" + constValue.getLine() + "): Konstanta " + name + " nije odgovarajuceg tipa!", null);
+				}
+				
+				NumConst numConst = (NumConst) constValue;
+				int value = numConst.getN1();
+				constNode.setAdr(value);
+				
+			} else if(constValue instanceof CharConst) {
+				if(!type.assignableTo(Tab.charType)) {
+					errorDetected = true;
+					report_error("Greska (" + constValue.getLine() + "): Konstanta " + name + " nije odgovarajuceg tipa!", null);
+				}
+				
+				CharConst charConst = (CharConst) constValue;
+				
+				// Uzima se vrijednost karaktera sa pozicije 1, jer se na poziciji 0 nalazi '
+				char character = charConst.getC1().charAt(1);
+				constNode.setAdr(character);
+				
+			} else if(constValue instanceof BoolConst) {
+				if(!type.assignableTo(SymbolTable.boolType)) {
+					errorDetected = true;
+					report_error("Greska (" + constValue.getLine() + "): Konstanta " + name + " nije odgovarajuceg tipa!", null);
+				}
+				
+				BoolConst boolConst = (BoolConst) constValue;
+				String value = boolConst.getBool();
+				
+				if("true".equals(value)) {
+					constNode.setAdr(1);
+				} else if("false".equals(value)) {
+					constNode.setAdr(0);
+				}
+			}
+		}
 		
+		this.constDeclarations.clear();
 	}
 	
 	public void visit(ConstDecl constDecl) {
-		
-	}
-	
-	public void visit(BoolConst boolConst) {
-		
-	}
-	
-	public void visit(CharConst charConst) {
-		
-	}
-	
-	public void visit(NumConst numConst) {
-		
+		constDeclarations.add(constDecl);
 	}
 	
 	public boolean passed() {
