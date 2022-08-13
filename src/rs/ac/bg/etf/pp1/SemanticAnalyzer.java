@@ -84,4 +84,28 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(ConstDeclarations constDeclarations) {
+		
+	}
+	
+	public void visit(ConstDecl constDecl) {
+		
+	}
+	
+	public void visit(BoolConst boolConst) {
+		
+	}
+	
+	public void visit(CharConst charConst) {
+		
+	}
+	
+	public void visit(NumConst numConst) {
+		
+	}
+	
+	public boolean passed() {
+		return !errorDetected;
+	}
+	
 }

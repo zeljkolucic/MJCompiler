@@ -49,6 +49,12 @@ public class MJParserTest {
 			prog.traverseBottomUp(v); 
 			
 			Tab.dump();
+			
+			if(!p.errorDetected && v.passed()) {
+				log.info("Parsiranje uspesno zavrseno!");
+			} else {
+				log.error("Parsiranje nije uspesno zavrseno!");
+			}
 		} 
 		finally {
 			if (br != null) try { br.close(); } catch (IOException e1) { log.error(e1.getMessage(), e1); }
