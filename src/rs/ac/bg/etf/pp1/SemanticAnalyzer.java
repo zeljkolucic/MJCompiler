@@ -35,6 +35,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private int nVars;
 	
 	private List<ConstDecl> constDeclarations = new LinkedList<>();
+	private List<VarDecl> varDeclarations = new LinkedList<>();
 	
 	/**
 	 * Dodaje objektni cvor u tabelu simbola
@@ -148,6 +149,43 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(ConstDecl constDecl) {
 		constDeclarations.add(constDecl);
+	}
+	
+	public void visit(VarDeclarations varDeclarations) {
+		Struct type = varDeclarations.getType().struct;
+		visitVarDeclarations(type);
+	}
+	
+	public void visit(VarDeclarationsList varDeclarationsList) {
+		Struct type = varDeclarationsList.getType().struct;
+		visitVarDeclarations(type);
+	}
+	
+	/**
+	 * Pomocna metoda za obradu deklaracija promenljivih odvojenih zapetama.
+	 * Dodaje deklarisanu promenljivu u tabelu simbola i ispituje 
+	 * tip pojedinacne promenljive.  
+	 */
+	private void visitVarDeclarations(Struct type) {
+		for(VarDecl varDeclaration: this.varDeclarations) {
+			String name = varDeclaration.getVarName();
+			Array array = varDeclaration.getArray();
+			
+			if(array instanceof IsArray) {
+				Struct arrayType = new Struct(Struct.Array);
+				arrayType.setElementType(type);
+				Tab.insert(Obj.Var, name, arrayType);
+				
+			} else if(array instanceof NotArray) {
+				Tab.insert(Obj.Var, name, type);
+			}
+		}
+		
+		this.varDeclarations.clear();
+	}
+	
+	public void visit(VarDecl varDecl) {
+		varDeclarations.add(varDecl);
 	}
 	
 	public boolean passed() {

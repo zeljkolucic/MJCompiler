@@ -1,5 +1,5 @@
 program MJProgram 
-	const bool y = false;
+	bool y, z; int x; char array[];
 { 
 	void f(int x, bool flag)
 		int z; int a;

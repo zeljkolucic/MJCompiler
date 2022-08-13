@@ -59,7 +59,7 @@ terminal String BOOL_CONST;
 terminal String IDENT;
 
 nonterminal ProgramDeclList;
-nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
+nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Array, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
 nonterminal MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Condition, CondTerm, CondFact;
@@ -115,7 +115,12 @@ MultipleVarDeclarations ::=	(MultipleCommaSeparatedVarDecls) MultipleVarDeclarat
 							{: parser.report_error("Izvrsen oporavak do , na liniji " + lleft, null); :}
 							;
 							
-VarDecl ::=	(VarDecl) IDENT:varName;
+VarDecl ::=	(VarDecl) IDENT:varName Array;
+
+Array ::=	(IsArray) LBRACKET RBRACKET
+			|
+			(NotArray) /* epsilon */
+			;
 
 ConstDeclaration ::=	(MultipleConstDecls) MultipleConstDeclarations ConstDecl SEMI
 						|
