@@ -68,7 +68,7 @@ nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamL
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
-nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type;
 
 /* Program */
@@ -157,9 +157,11 @@ MethodDeclList ::=	(MethodDeclarations) MethodDeclList MethodDecl
 					(NoMethodDecl) /* epsilon */
 					;
 					
-MethodDecl ::=	(MethodDecl) ReturnType:retType IDENT:methodName LPAREN Parameters RPAREN VarDeclList LBRACE StatementList RBRACE;
+MethodDecl ::=	(MethodDecl) MethodTypeName LPAREN Parameters RPAREN VarDeclList LBRACE StatementList RBRACE;
 
-ReturnType ::=	(RetType) Type
+MethodTypeName ::=	(MethodTypeName) ReturnType:retType IDENT:methodName;
+
+ReturnType ::=	(RetType) Type:type
 				|
 				(RetVoid) VOID
 				;

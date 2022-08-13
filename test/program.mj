@@ -1,5 +1,4 @@
-program MJProgram 
-	bool y, z; int x; char array[];
+program MJProgram 	
 { 
 	void f(int x, bool flag)
 		int z; int a;

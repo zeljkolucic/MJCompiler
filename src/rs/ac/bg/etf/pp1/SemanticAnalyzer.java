@@ -34,6 +34,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	private int nVars;
 	
+	private Obj currentMethod = null;
+	private boolean returnFound = false;
+	
 	private List<ConstDecl> constDeclarations = new LinkedList<>();
 	private List<VarDecl> varDeclarations = new LinkedList<>();
 	
@@ -186,6 +189,43 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(VarDecl varDecl) {
 		varDeclarations.add(varDecl);
+	}
+	
+	/**
+	 * Obradjuje deklaraciju methode i dodaje je 
+	 * u tabelu simbola. Otvara novi opseg za datu
+	 * metodu.
+	 */
+	public void visit(MethodTypeName methodTypeName) {
+		ReturnType returnType = methodTypeName.getReturnType();
+		Struct type = Tab.noType;
+		
+		if(returnType instanceof RetType) 
+			type = ((RetType) returnType).getType().struct;
+		
+		String name = methodTypeName.getMethodName();
+		currentMethod = Tab.insert(Obj.Meth, name, type);
+		
+		methodTypeName.obj = currentMethod;
+		Tab.openScope();
+	}
+	
+	/**
+	 * Proverava da li metoda koja se trenutno obradjuje 
+	 * ima return iskaz u zavisnosti od njenog povratnog tipa.
+	 * Uvezuje promenljive iz tekuceg opsega i zatvara taj opseg.
+	 */
+	public void visit(MethodDecl methodDecl) {
+		if(!returnFound && currentMethod.getType() != Tab.noType) {
+			errorDetected = true;
+			report_error("Greska (" + methodDecl.getLine() + "): Funkcija " + currentMethod.getName() + " nema return iskaz!", null);
+		}
+		
+		Tab.chainLocalSymbols(currentMethod);
+		Tab.closeScope();
+		
+		returnFound = false;
+		currentMethod = null;
 	}
 	
 	public boolean passed() {
