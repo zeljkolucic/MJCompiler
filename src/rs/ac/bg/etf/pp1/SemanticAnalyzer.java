@@ -29,7 +29,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		System.out.println(msg.toString());
 	}
 	
-	boolean errorDetected = false;
+	private boolean errorDetected = false;
+	
+	private int nVars;
 	
 	/**
 	 * Dodaje objektni cvor u tabelu simbola
@@ -52,6 +54,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	 * cvor. Zatvara tekuci opseg.
 	 */
 	public void visit(Program program) {
+		nVars = Tab.currentScope.getnVars();
 		ProgName progName = program.getProgName();
 		Tab.chainLocalSymbols(progName.obj);
 		Tab.closeScope();
