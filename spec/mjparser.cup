@@ -200,7 +200,7 @@ Statement ::= 	(MatchedStmt) Matched
 				
 Unmatched ::=	(UnmatchedIf) IF LPAREN Condition RPAREN Statement
 				|
-				(UnmatchedIfElse) IF LPAREN Matched RPAREN ELSE Unmatched
+				(UnmatchedIfElse) IF LPAREN Condition RPAREN ELSE Unmatched
 				;									
 
 Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
