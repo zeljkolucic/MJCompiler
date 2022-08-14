@@ -59,17 +59,17 @@ terminal String BOOL_CONST;
 terminal String IDENT;
 
 nonterminal ProgramDeclList;
-nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Array, ConstDeclaration, MultipleConstDeclarations, ConstDecl, Const, VarDeclList; 
+nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Array, ConstDeclaration, MultipleConstDeclarations, ConstDecl, VarDeclList; 
 nonterminal MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Condition, CondTerm, CondFact;
 nonterminal Matched, Unmatched;
-nonterminal Designator, Expr, Term, Factor, MulFacList, ActualPars, ActualParamList;
+nonterminal ActualPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
 
-nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList;
 
 /* Program */
 
@@ -234,7 +234,7 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(ReturnStatement) RETURN SEMI
 				|
-				(ReturnExprStatement) RETURN Expr SEMI
+				(ReturnExprStatement) RETURN Expr:expr SEMI
 				|
 				(MatchedStatement) IF LPAREN Condition RPAREN Matched ELSE Matched
 				|
@@ -255,33 +255,33 @@ DesignatorStatement ::=	(DesignatorAssignStatement) Designator Assignop Expr
 
 Designator ::=	(DesignatorIdent) IDENT 
 				|
-				(DesignatorIdentArray) IDENT LBRACKET Expr RBRACKET
+				(DesignatorIdentArray) Designator LBRACKET Expr RBRACKET
 				;		
 				
-Expr ::=	(AddOpTermExpr) Expr Addop Term
+Expr ::=	(AddOpTermExpr) Expr:te Addop Term:t
 			|
 			(NegTermExpr) MINUS Term
 			|
-			(PosTermExpr) Term
+			(PosTermExpr) Term:term
 			;
 			
-Term ::=	(Term) Factor MulFacList;
+Term ::=	(Term) Factor:f MulFacList;
 
-MulFacList ::= 	(MulOpFactor) MulFacList Mulop Factor 
+MulFacList ::= 	(MulopFactor) MulFacList Mulop Factor 
 				|
 				(NoMulopFactor) /* epsilon */
 				;
 						
 			
-Factor ::= 	(ConstFactor) Const
+Factor ::= 	(ConstFactor) Const:constant
 			|
 			(ExprFactor) LPAREN Expr RPAREN
 			|
 			(NewArray) NEW Type:arrayType LBRACKET Expr RBRACKET
 			|
-			(Var) Designator
+			(Var) Designator:designator
 			|
-			(FunctionCall) Designator LPAREN ActualPars RPAREN
+			(FunctionCall) Designator:designator LPAREN ActualPars RPAREN
 			|
 			(NewObj) NEW Type:objType
 			;	

@@ -1,4 +1,5 @@
-program MJProgram 	
+program MJProgram 
+	int x;	
 { 
 	void f(int x, bool flag)
 		int z; int a;
@@ -22,7 +23,7 @@ program MJProgram
 		if(x > 3) 
 			if(y > 4) break; 
 			
-		return;
+		return 3;
 		
 	}
 }
