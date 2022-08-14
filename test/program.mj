@@ -9,7 +9,7 @@ program MJProgram
 			x = 3;
 		} while(x < 3);
 		
-		konstanta--;
+		read(3);
 		
 		functionCall(x, 3);
 	

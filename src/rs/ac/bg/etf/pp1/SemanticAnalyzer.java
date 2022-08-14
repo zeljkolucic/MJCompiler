@@ -228,6 +228,45 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		currentMethod = null;
 	}
 	
+	public void visit(ReadStatement readStatement) {
+		Designator designator = readStatement.getDesignator();
+		Struct type = designator.obj.getType();
+		
+		if(designator.obj.getKind() == Obj.Meth) {
+			errorDetected = true;
+			report_error("Greska [" + readStatement.getLine() + "]: Designator mora oznacavati promenljivu ili element niza.", null);
+			
+		} if(type != Tab.intType && type != Tab.charType && type != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + readStatement.getLine() + "]: Designator mora biti tipa int, char ili bool.", null);
+		}
+	}
+	
+	public void visit(PrintStatement printStatement) {
+		visitPrintStatement(printStatement.getExpr().struct, printStatement.getLine());
+	}
+	
+	public void visit(PrintStatementNumConst printStatementNumConst) {
+		visitPrintStatement(printStatementNumConst.getExpr().struct, printStatementNumConst.getLine());
+	}
+	
+	private void visitPrintStatement(Struct type, int line) {
+		if(type != Tab.intType && type != Tab.charType && type != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + line + "]: Expr mora biti tipa int, char ili bool.", null);
+		}
+	}
+	
+	public void visit(ReturnStatement returnStatement) {
+		returnFound = true;
+		
+		Struct currentMethodType = currentMethod.getType();
+		if(currentMethodType != Tab.noType) {
+			errorDetected = true;
+			report_error("Greska [" + returnStatement.getLine() + "]: Tip izraza u return naredbi se ne slaze sa tipom povratne vrednosti funkcije!", null);
+		}
+	}
+	
 	public void visit(ReturnExprStatement returnExprStatement) {
 		returnFound = true;
 		
@@ -244,21 +283,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
-	public void visit(ReturnStatement returnStatement) {
-		returnFound = true;
-		
-		Struct currentMethodType = currentMethod.getType();
-		if(currentMethodType != Tab.noType) {
-			errorDetected = true;
-			report_error("Greska [" + returnStatement.getLine() + "]: Tip izraza u return naredbi se ne slaze sa tipom povratne vrednosti funkcije!", null);
-		}
-	}
-	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
 		Designator designator = designatorAssignStatement.getDesignator();
 		Expr expr = designatorAssignStatement.getExpr();
 		
-		if(designator.obj.getKind() == Obj.Meth ) {
+		if(designator.obj.getKind() == Obj.Meth) {
 			errorDetected = true;
 			report_error("Greska [" + designatorAssignStatement.getLine() + "]: Odrediste u izrazu dodele ne moze biti metoda!", null);
 			
@@ -274,7 +303,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(DesignatorIncStatement designatorIncStatement) {
 		Designator designator = designatorIncStatement.getDesignator();
 		
-		if(designator.obj.getKind() == Obj.Meth ) {
+		if(designator.obj.getKind() == Obj.Meth) {
 			errorDetected = true;
 			report_error("Greska [" + designatorIncStatement.getLine() + "]: Odrediste u izrazu inkrementiranja ne moze biti metoda!", null);
 			
@@ -290,7 +319,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(DesignatorDecStatement designatorDecStatement) {
 		Designator designator = designatorDecStatement.getDesignator();
 		
-		if(designator.obj.getKind() == Obj.Meth ) {
+		if(designator.obj.getKind() == Obj.Meth) {
 			errorDetected = true;
 			report_error("Greska [" + designatorDecStatement.getLine() + "]: Odrediste u izrazu dekrementiranja ne moze biti metoda!", null);
 			
