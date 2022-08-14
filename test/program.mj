@@ -1,13 +1,15 @@
 program MJProgram 
-	int x;	
+	int x; bool flag; const int konstanta = 3;
 { 
-	void f(int x, bool flag)
+	void f(int x)
 		int z; int a;
 	{
 		do {
 			x++;
-			f = 3;
+			x = 3;
 		} while(x < 3);
+		
+		konstanta--;
 		
 		functionCall(x, 3);
 	

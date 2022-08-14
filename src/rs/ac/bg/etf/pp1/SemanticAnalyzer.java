@@ -265,15 +265,43 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		} else if(!expr.struct.assignableTo(designator.obj.getType())) {
 			errorDetected = true;
 			report_error("Greska [" + designatorAssignStatement.getLine() + "]: Nekompatibilni tipovi u izrazu dodele!", null);
+		} else if(designator.obj.getKind() == Obj.Con) {
+			errorDetected = true;
+			report_error("Greska [" + designatorAssignStatement.getLine() + "]: Nije moguce promeniti vrednost konstante!", null);
 		}
 	}
 	
 	public void visit(DesignatorIncStatement designatorIncStatement) {
+		Designator designator = designatorIncStatement.getDesignator();
 		
+		if(designator.obj.getKind() == Obj.Meth ) {
+			errorDetected = true;
+			report_error("Greska [" + designatorIncStatement.getLine() + "]: Odrediste u izrazu inkrementiranja ne moze biti metoda!", null);
+			
+		} else if(designator.obj.getType() != Tab.intType) {
+			errorDetected = true;
+			report_error("Greska [" + designatorIncStatement.getLine() + "]: Jedino se promenljiva tipa int moze inkrementirati!", null);
+		} else if(designator.obj.getKind() == Obj.Con) {
+			errorDetected = true;
+			report_error("Greska [" + designatorIncStatement.getLine() + "]: Nije moguce promeniti vrednost konstante!", null);
+		}
 	}
 	
 	public void visit(DesignatorDecStatement designatorDecStatement) {
+		Designator designator = designatorDecStatement.getDesignator();
 		
+		if(designator.obj.getKind() == Obj.Meth ) {
+			errorDetected = true;
+			report_error("Greska [" + designatorDecStatement.getLine() + "]: Odrediste u izrazu dekrementiranja ne moze biti metoda!", null);
+			
+		} else if(designator.obj.getType() != Tab.intType) {
+			errorDetected = true;
+			report_error("Greska [" + designatorDecStatement.getLine() + "]: Jedino se promenljiva tipa int moze dekrementirati!", null);
+			
+		} else if(designator.obj.getKind() == Obj.Con) {
+			errorDetected = true;
+			report_error("Greska [" + designatorDecStatement.getLine() + "]: Nije moguce promeniti vrednost konstante!", null);
+		}
 	}
 	
 	public void visit(DesignatorFunctionCall designatorFunctionCall) {
