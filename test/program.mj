@@ -6,7 +6,7 @@ program MJProgram
 	{
 		do {
 			x++;
-			z = z + 3;
+			f = 3;
 		} while(x < 3);
 		
 		functionCall(x, 3);

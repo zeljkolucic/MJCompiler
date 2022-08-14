@@ -243,7 +243,7 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				(Stmt) LBRACE StatementList RBRACE
 				;
 				
-DesignatorStatement ::=	(DesignatorAssignStatement) Designator Assignop Expr
+DesignatorStatement ::=	(DesignatorAssignStatement) Designator:designator Assignop Expr:expr
 						|
 						(DesignatorIncStatement) Designator INC
 						|

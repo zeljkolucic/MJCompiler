@@ -254,6 +254,32 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(DesignatorAssignStatement designatorAssignStatement) {
+		Designator designator = designatorAssignStatement.getDesignator();
+		Expr expr = designatorAssignStatement.getExpr();
+		
+		if(designator.obj.getKind() == Obj.Meth ) {
+			errorDetected = true;
+			report_error("Greska [" + designatorAssignStatement.getLine() + "]: Odrediste u izrazu dodele ne moze biti metoda!", null);
+			
+		} else if(!expr.struct.assignableTo(designator.obj.getType())) {
+			errorDetected = true;
+			report_error("Greska [" + designatorAssignStatement.getLine() + "]: Nekompatibilni tipovi u izrazu dodele!", null);
+		}
+	}
+	
+	public void visit(DesignatorIncStatement designatorIncStatement) {
+		
+	}
+	
+	public void visit(DesignatorDecStatement designatorDecStatement) {
+		
+	}
+	
+	public void visit(DesignatorFunctionCall designatorFunctionCall) {
+		
+	}
+	
 	public void visit(DesignatorIdent designatorIdent) {
 		Obj obj = Tab.find(designatorIdent.getI1());
 		if(obj == Tab.noObj) {
