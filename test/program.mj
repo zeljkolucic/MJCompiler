@@ -1,5 +1,5 @@
 program MJProgram 
-	int x; bool flag; const int konstanta = 3;
+	int x; bool flag; const int konstanta = 3; int array1[]; int array2[];
 { 
 	void f(int x)
 		int z; int a;
@@ -7,13 +7,14 @@ program MJProgram
 		do {
 			x++;
 			x = 3;
+			continue;
 		} while(x < 3);
 		
 		read(3);
 		
 		functionCall(x, 3);
 	
-		continue;
+		//continue;
 		return new char[(-3 * 8) * 3 + 4];
 		if (x == 4) {
 			x = 4;
@@ -23,7 +24,7 @@ program MJProgram
 		//if(if (x > 3) return; else x++;) else if (x > 3) { }
 		
 		if(x > 3) 
-			if(y > 4) break; 
+			if(array1 > array2) break; 
 			
 		return 3;
 		

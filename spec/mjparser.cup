@@ -62,14 +62,14 @@ nonterminal ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Array, ConstDeclaration, MultipleConstDeclarations, ConstDecl, VarDeclList; 
 nonterminal MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
-nonterminal Condition, CondTerm, CondFact;
 nonterminal Matched, Unmatched;
 nonterminal ActualPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
+nonterminal DoWhileStatementBegin;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition;
 
 /* Program */
 
@@ -238,10 +238,12 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(MatchedStatement) IF LPAREN Condition RPAREN Matched ELSE Matched
 				|
-				(DoWhileStatement) DO Matched WHILE LPAREN Condition RPAREN SEMI
+				(DoWhileStatement) DoWhileStatementBegin Matched WHILE LPAREN Condition RPAREN SEMI
 				|
 				(Stmt) LBRACE StatementList RBRACE
 				;
+				
+DoWhileStatementBegin ::=	(DoWhileStatementBegin) DO;				
 				
 DesignatorStatement ::=	(DesignatorAssignStatement) Designator:designator Assignop Expr:expr
 						|
@@ -314,7 +316,7 @@ CondTerm ::=	(MultipleCondFacts) CondTerm AND CondFact
 
 CondFact ::=	(CondFactExpr) Expr
 				|
-				(CondFactRelOpExpr) Expr Relop Expr
+				(CondFactRelopExpr) Expr Relop Expr
 				; 												
 
 

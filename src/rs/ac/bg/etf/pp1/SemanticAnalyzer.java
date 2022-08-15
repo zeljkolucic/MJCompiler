@@ -36,6 +36,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	private Obj currentMethod = null;
 	private boolean returnFound = false;
+	private int doWhileNestedLevel = 0;
 	
 	private List<ConstDecl> constDeclarations = new LinkedList<>();
 	private List<VarDecl> varDeclarations = new LinkedList<>();
@@ -257,6 +258,20 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(BreakStatement breakStatement) {
+		if(doWhileNestedLevel == 0) {
+			errorDetected = true;
+			report_error("Greska [" + breakStatement.getLine() + "]: Iskaz break se moze koristiti samo unutar do-while petlje.", null);
+		}
+	}
+	
+	public void visit(ContinueStatement continueStatement) {
+		if(doWhileNestedLevel == 0) {
+			errorDetected = true;
+			report_error("Greska [" + continueStatement.getLine() + "]: Iskaz continue se moze koristiti samo unutar do-while petlje.", null);
+		}
+	}
+	
 	public void visit(ReturnStatement returnStatement) {
 		returnFound = true;
 		
@@ -281,6 +296,15 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			errorDetected = true;
 			report_error("Greska [" + returnExprStatement.getLine() + "]: Tip izraza u return naredbi se ne slaze sa tipom povratne vrednosti funkcije!", null);
 		}
+	}
+	
+	public void visit(DoWhileStatementBegin doWhileStatementBegin) {
+		doWhileNestedLevel++;
+	}
+	
+	public void visit(DoWhileStatement doWhileStatement) {
+		// Provera za Condition tip
+		doWhileNestedLevel--;
 	}
 	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
@@ -481,6 +505,71 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(NewObj newObj) {
 		newObj.struct = newObj.getType().struct;
+	}
+	
+	public void visit(MultipleCondTerms multipleCondTerms) {
+		Struct conditionType = multipleCondTerms.getCondition().struct;
+		Struct condTermType = multipleCondTerms.getCondTerm().struct;
+		
+		if(conditionType != SymbolTable.boolType || condTermType != SymbolTable.boolType) {
+			multipleCondTerms.struct = Tab.noType;
+		} else {
+			multipleCondTerms.struct = SymbolTable.boolType;
+		}
+	}
+	
+	public void visit(SingleCondTerm singleCondTerm) {
+		singleCondTerm.struct = singleCondTerm.getCondTerm().struct;
+	}
+	
+	public void visit(MultipleCondFacts multipleCondFacts) {
+		Struct condFactType = multipleCondFacts.getCondFact().struct;
+		Struct condTermType = multipleCondFacts.getCondTerm().struct;
+		
+		if(condFactType != SymbolTable.boolType || condTermType != SymbolTable.boolType) {
+			multipleCondFacts.struct = Tab.noType;
+		} else {
+			multipleCondFacts.struct = SymbolTable.boolType;
+		}
+	}
+	
+	public void visit(SingleCondFact singleCondFact) {
+		singleCondFact.struct = singleCondFact.getCondFact().struct;
+	}
+	
+	public void visit(CondFactExpr condFactExpr) {
+		Struct type = condFactExpr.getExpr().struct;
+		if(type != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + condFactExpr.getLine() + "]: Izraz mora biti tipa bool.", null);
+			condFactExpr.struct = Tab.noType;
+			
+		} else {
+			condFactExpr.struct = type;
+		}
+	}
+	
+	public void visit(CondFactRelopExpr condFactRelopExpr) {
+		Expr expr = condFactRelopExpr.getExpr();
+		Expr expr1 = condFactRelopExpr.getExpr1();
+		Relop relop = condFactRelopExpr.getRelop();
+		
+		if(expr.struct.compatibleWith(expr1.struct)) {
+			if((expr.struct.getKind() == Struct.Array || expr.struct.getKind() == Struct.Array || expr.struct.getKind() == Struct.Bool || expr1.struct.getKind() == Struct.Bool) 
+					&& !(relop instanceof RelopEqual || relop instanceof RelopNotEqual)) {
+				errorDetected = true;
+				report_error("Greska [" + condFactRelopExpr.getLine() + "]: Uz promenljive tipa niza, od relacionih opereatora, mogu se koristiti samo != i ==.", null);
+				condFactRelopExpr.struct = Tab.noType;
+				
+			} else {
+				condFactRelopExpr.struct = SymbolTable.boolType;
+			}
+			
+		} else {
+			errorDetected = true;
+			report_error("Greska [" + condFactRelopExpr.getLine() + "]: Tipovi oba izraza moraju biti kompatibilni.", null);
+			condFactRelopExpr.struct = Tab.noType;
+		}
 	}
 	
 	public void visit(BoolConst boolConst) {
