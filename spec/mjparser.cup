@@ -51,6 +51,7 @@ scan with {:
 terminal PROGRAM, READ, PRINT, CONST;
 terminal IF, ELSE, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
+terminal SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; 
 
 terminal Integer NUM_CONST;
 terminal String CHAR_CONST;
@@ -64,11 +65,11 @@ nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Matched, Unmatched;
 nonterminal ActualPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
-nonterminal Parameters, OptArgsOnly, OptArgs, OptArg;
+nonterminal Parameters, OptArgs, OptArg;
 nonterminal DoWhileStatementBegin;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition;
 
 /* Program */
 
@@ -165,17 +166,14 @@ ReturnType ::=	(RetType) Type:type
 				(RetVoid) VOID
 				;
 
-FormPars ::=	(FormParams) FormalParamList
-				|
-				(NoFormParam) /* epsilon */
-				;		
+FormPars ::=	(FormParams) FormalParamList;		
 				
 FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
 					|
 					(SingleFormalParamDecl) FormalParamDecl 
 					;	
 					
-FormalParamDecl ::=	(FormalParamDeclaration) Type:paramType IDENT:paramName
+FormalParamDecl ::=	(FormalParamDeclaration) Type:paramType IDENT:paramName Array
 					|
 					(FormalParamDeclError) error:l
 					{: parser.report_error("Izvrsen oporavak na liniji " + lleft, null); :} 
@@ -183,19 +181,17 @@ FormalParamDecl ::=	(FormalParamDeclaration) Type:paramType IDENT:paramName
 
 Parameters ::=	(FormParametersOnly) FormPars
 				|
-				(OptionalArgumentsOnly) OptArgsOnly
-				;			
-						
-
-OptArgsOnly ::=	(OptArgumentsOnly) OptArgsOnly COMMA OptArg
+				(OptionalArgumentsOnly) OptArgs
 				|
-				(SingleOptArg) OptArg
+				(FormParametersAndOptionalArguments) FormalParamList COMMA OptArgs
+				|
+				(NoParameters) /* epsilon */
 				;
-				
+
 OptArgs ::=	(OptArguments) OptArgs COMMA OptArg
 			|
-			(NoOptArgs) /* epsilon */
-			;				
+			(SingleOptArg) OptArg
+			;		
 
 OptArg ::=	(OptArg) Type:paramType IDENT:paramName ASSIGN Const; 
 
@@ -211,9 +207,9 @@ Statement ::= 	(MatchedStmt) Matched
 				(UnmatchedStmt) Unmatched
 				;
 				
-Unmatched ::=	(UnmatchedIf) IF LPAREN Condition RPAREN Statement
+Unmatched ::=	(UnmatchedIf) IF IfCondition Statement
 				|
-				(UnmatchedIfElse) IF LPAREN Condition RPAREN ELSE Unmatched
+				(UnmatchedIfElse) IF IfCondition ELSE Unmatched
 				;									
 
 Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
@@ -235,7 +231,7 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(ReturnExprStatement) RETURN Expr:expr SEMI
 				|
-				(MatchedStatement) IF LPAREN Condition RPAREN Matched ELSE Matched
+				(MatchedStatement) IF IfCondition Matched ELSE Matched
 				|
 				(DoWhileStatement) DoWhileStatementBegin Matched WHILE LPAREN Condition RPAREN SEMI
 				|
@@ -299,12 +295,15 @@ ActualParamList ::=	(ActualParams) ActualParamList COMMA Expr
 					
 /* Conditions */
 
+IfCondition ::=	(IfCond) LPAREN Condition RPAREN
+				|
+				(IfCondError) error RPAREN:l
+				{: parser.report_error("Izvrsen oporavak do ) na liniji " + lleft, null); :}
+				;
+
 Condition ::=	(MultipleCondTerms) Condition OR CondTerm
 				|
 				(SingleCondTerm) CondTerm
-				|
-				(ErrorCond) error:l
-				{: parser.report_error("Izvrsen oporavak do ) na liniji " + lleft, null); :}
 				;
 
 

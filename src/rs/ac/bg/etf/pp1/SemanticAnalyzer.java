@@ -83,14 +83,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		if(typeNode == Tab.noObj) {
 			errorDetected = true;
 			type.struct = Tab.noType;
-			report_error("Greska [" + type.getLine() + "]: Nije pronadjen tip " + typeName + " u tabeli simbola!", null);
+			report_error("Greska [" + type.getLine() + "]: Nije pronadjen tip " + typeName + " u tabeli simbola.", null);
 		} else {
 			if (typeNode.getKind() == Obj.Type) {
 				type.struct = typeNode.getType();
 			} else {
 				errorDetected = true;
 				type.struct = Tab.noType;
-				report_error("Greska [" + type.getLine() + "]:  Ime " + type.getTypeName() + " ne predstavlja tip!", null);
+				report_error("Greska [" + type.getLine() + "]:  Ime " + type.getTypeName() + " ne predstavlja tip.", null);
 			}
 		}
 	}
@@ -112,7 +112,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			if(constValue instanceof NumConst) {
 				if(!type.assignableTo(Tab.intType)) {
 					errorDetected = true;
-					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa!", null);
+					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa.", null);
 				}
 				
 				NumConst numConst = (NumConst) constValue;
@@ -122,7 +122,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			} else if(constValue instanceof CharConst) {
 				if(!type.assignableTo(Tab.charType)) {
 					errorDetected = true;
-					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa!", null);
+					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa.", null);
 				}
 				
 				CharConst charConst = (CharConst) constValue;
@@ -134,7 +134,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			} else if(constValue instanceof BoolConst) {
 				if(!type.assignableTo(SymbolTable.boolType)) {
 					errorDetected = true;
-					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa!", null);
+					report_error("Greska [" + constValue.getLine() + "]: Konstanta " + name + " nije odgovarajuceg tipa.", null);
 				}
 				
 				BoolConst boolConst = (BoolConst) constValue;
@@ -219,7 +219,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(MethodDecl methodDecl) {
 		if(!returnFound && currentMethod.getType() != Tab.noType) {
 			errorDetected = true;
-			report_error("Greska [" + methodDecl.getLine() + "]: Funkcija " + currentMethod.getName() + " nema return iskaz!", null);
+			report_error("Greska [" + methodDecl.getLine() + "]: Funkcija " + currentMethod.getName() + " nema return iskaz.", null);
 		}
 		
 		Tab.chainLocalSymbols(currentMethod);
@@ -227,6 +227,22 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		returnFound = false;
 		currentMethod = null;
+	}
+	
+	public void visit(FormalParamDeclaration formalParamDeclaration) {
+		Struct type = formalParamDeclaration.getType().struct;
+		String paramName = formalParamDeclaration.getParamName();
+		boolean isArray = formalParamDeclaration.getArray() instanceof IsArray;
+		
+		Obj node;
+		if(isArray) {
+			Struct arrayType = new Struct(Struct.Array);
+			arrayType.setElementType(type);
+			node = Tab.insert(Obj.Var, paramName, arrayType);
+			
+		} else {
+			node = Tab.insert(Obj.Var, paramName, type);
+		}
 	}
 	
 	public void visit(ReadStatement readStatement) {
@@ -298,12 +314,24 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(IfCond ifCond) {
+		Struct conditionType = ifCond.getCondition().struct;
+		if(conditionType != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + ifCond.getLine() + "]: Tip uslovnog izraza Condition mora biti bool.", null);
+		}
+	}
+	
 	public void visit(DoWhileStatementBegin doWhileStatementBegin) {
 		doWhileNestedLevel++;
 	}
 	
 	public void visit(DoWhileStatement doWhileStatement) {
-		// Provera za Condition tip
+		Struct conditionType = doWhileStatement.getCondition().struct;
+		if(conditionType != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + doWhileStatement.getLine() + "]: Uslovni izraz Condition mora biti tipa bool.", null);
+		}
 		doWhileNestedLevel--;
 	}
 	
