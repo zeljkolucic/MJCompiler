@@ -60,7 +60,7 @@ terminal String IDENT;
 
 nonterminal ProgramDeclList;
 nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Array, ConstDeclaration, MultipleConstDeclarations, ConstDecl, VarDeclList; 
-nonterminal MethodDeclList, MethodDecl, ReturnType, FormPars, FormalParamList, FormalParamDecl;
+nonterminal MethodDeclList, MethodDecl, ReturnType, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Matched, Unmatched;
 nonterminal ActualPars, ActualParamList;
@@ -165,8 +165,6 @@ ReturnType ::=	(RetType) Type:type
 				|
 				(RetVoid) VOID
 				;
-
-FormPars ::=	(FormParams) FormalParamList;		
 				
 FormalParamList ::=	(FormalParamDeclarations) FormalParamList COMMA FormalParamDecl
 					|
@@ -179,7 +177,7 @@ FormalParamDecl ::=	(FormalParamDeclaration) Type:paramType IDENT:paramName Arra
 					{: parser.report_error("Izvrsen oporavak na liniji " + lleft, null); :} 
 					;
 
-Parameters ::=	(FormParametersOnly) FormPars
+Parameters ::=	(FormParametersOnly) FormalParamList
 				|
 				(OptionalArgumentsOnly) OptArgs
 				|

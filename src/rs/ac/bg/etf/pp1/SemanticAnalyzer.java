@@ -33,6 +33,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private boolean errorDetected = false;
 	
 	private int nVars;
+	private int fpPos = 0;
 	
 	private Obj currentMethod = null;
 	private boolean returnFound = false;
@@ -198,6 +199,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	 * metodu.
 	 */
 	public void visit(MethodTypeName methodTypeName) {
+		fpPos = 0;
+		
 		ReturnType returnType = methodTypeName.getReturnType();
 		Struct type = Tab.noType;
 		
@@ -242,6 +245,22 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			
 		} else {
 			node = Tab.insert(Obj.Var, paramName, type);
+		}
+		
+		node.setFpPos(fpPos++);
+	}
+	
+	public void visit(OptArg optArg) {
+		Struct optArgType = optArg.getType().struct;
+		String paramName = optArg.getParamName();
+		Const optArgConst = optArg.getConst();
+		
+		if(!optArgConst.struct.assignableTo(optArgType)) {
+			errorDetected = true;
+			report_error("Greska [" + optArg.getLine() + "]: Podrazumevana vrednost koja se dodeljuje parametru mora biti istog tipa kao i sam parametar.", null);
+		} else {
+			Obj node = Tab.insert(Obj.Var, paramName, optArgType);
+			node.setFpPos(fpPos++);
 		}
 	}
 	

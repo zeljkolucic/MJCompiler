@@ -1,7 +1,7 @@
 program MJProgram 
 	int x; bool flag; const int konstanta = 3; int array1[]; int array2[];
 { 
-	void f(int x, int flag2 = 3)
+	void f(int x, bool flag2 = false)
 		int z; int a;
 	{
 		do {
