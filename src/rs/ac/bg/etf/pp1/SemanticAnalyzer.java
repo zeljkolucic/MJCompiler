@@ -30,6 +30,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		System.out.println(msg.toString());
 	}
 	
+	private static int MAX_LOCAL_VARIABLES = 256;
+	private static int MAX_GLOBAL_VARIABLES = 65536;
+	
 	private boolean errorDetected = false;
 	
 	private int nVars;
@@ -38,6 +41,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private Obj currentMethod = null;
 	private boolean returnFound = false;
 	private int doWhileNestedLevel = 0;
+	private int numberOfLocalVariables = 0;
+	private int numberOfGlobalVariables = 0;
 	
 	private LinkedList<ConstDecl> constDeclarations = new LinkedList<>();
 	private LinkedList<VarDecl> varDeclarations = new LinkedList<>();
@@ -167,6 +172,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 	
 	public void visit(ConstDecl constDecl) {
+		Obj previousConstDecl = Tab.find(constDecl.getConstName());
+		int level = currentMethod != null ? 1 : 0;
+		
+		if(previousConstDecl != null && previousConstDecl.getLevel() == level) {
+			errorDetected = true;
+			report_error("Greska [" + constDecl.getLine() + "]: Promenljiva " + constDecl.getConstName() + " je vec deklarisana.", null);
+		}
+		
 		constDeclarations.add(constDecl);
 	}
 	
@@ -204,6 +217,21 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 	
 	public void visit(VarDecl varDecl) {
+		Obj previousVarDecl = Tab.find(varDecl.getVarName());
+		int level = currentMethod != null ? 1 : 0;
+		boolean isLocal = currentMethod != null;
+		
+		if(previousVarDecl != null && previousVarDecl.getLevel() == level) {
+			errorDetected = true;
+			report_error("Greska [" + varDecl.getLine() + "]: Promenljiva " + varDecl.getVarName() + " je vec deklarisana.", null);
+		}
+		
+		if(isLocal) {
+			numberOfLocalVariables++;
+		} else {
+			numberOfGlobalVariables++;	
+		}
+		
 		varDeclarations.add(varDecl);
 	}
 	
