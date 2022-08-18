@@ -39,8 +39,22 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private boolean returnFound = false;
 	private int doWhileNestedLevel = 0;
 	
-	private List<ConstDecl> constDeclarations = new LinkedList<>();
-	private List<VarDecl> varDeclarations = new LinkedList<>();
+	private LinkedList<ConstDecl> constDeclarations = new LinkedList<>();
+	private LinkedList<VarDecl> varDeclarations = new LinkedList<>();
+	private LinkedList<ActPar> actPars = new LinkedList<>();
+	private LinkedList<Method> methods = new LinkedList<>();
+	
+	class Method {
+		String methodName;
+		List<FormalParamDeclaration> formalParameters;
+		List<OptArg> optionalArguments;
+		
+		Method(String methodName) {
+			this.methodName = methodName;
+			this.formalParameters = new LinkedList<>();
+			this.optionalArguments = new LinkedList<>();
+		}
+	}
 	
 	/**
 	 * Dodaje objektni cvor u tabelu simbola
@@ -212,6 +226,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		methodTypeName.obj = currentMethod;
 		Tab.openScope();
+		
+		Method method = new Method(name);
+		methods.add(method);
 	}
 	
 	/**
@@ -248,6 +265,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 		
 		node.setFpPos(fpPos++);
+		methods.getLast().formalParameters.add(formalParamDeclaration);
 	}
 	
 	public void visit(OptArg optArg) {
@@ -262,6 +280,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			Obj node = Tab.insert(Obj.Var, paramName, optArgType);
 			node.setFpPos(fpPos++);
 		}
+		
+		methods.getLast().optionalArguments.add(optArg);
 	}
 	
 	public void visit(ReadStatement readStatement) {
@@ -405,7 +425,106 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 	
 	public void visit(DesignatorFunctionCall designatorFunctionCall) {
+		Obj function = designatorFunctionCall.getDesignator().obj;
 		
+		if(function.getKind() != Obj.Meth) {
+			errorDetected = true;
+			report_error("Greska [" + designatorFunctionCall.getLine() + "]: " + function.getName() + " nije funkcija.", null);
+			
+		} else {
+			Method method = getMethodByName(function.getName());
+			if(method == null) {
+				errorDetected = true;
+				report_error("Greska [" + designatorFunctionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+			} else {
+				if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+					errorDetected = true;
+					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+				} else {
+					int index = 0;
+					for(ActPar actPar: actPars) {
+						if(index < method.formalParameters.size()) {
+							FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
+							if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
+								errorDetected = true;
+								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+							}
+						} else {
+							OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
+							if(!actPar.struct.assignableTo(optArg.getType().struct)) {
+								errorDetected = true;
+								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+							}
+						}
+						
+						index++;
+					}
+				}
+			}
+		}
+		
+		actPars.clear();
+	}
+
+	public void visit(FunctionCall functionCall) {
+		Obj function = functionCall.getDesignator().obj;
+		
+		if(function.getKind() != Obj.Meth) {
+			errorDetected = true;
+			report_error("Greska [" + functionCall.getLine() + "]: " + function.getName() + " nije funkcija.", null);
+			
+		} else {
+			if(function.getType() == Tab.noType) {
+				errorDetected = true;
+				report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " se ne moze koristiti u izrazu dodele jer nema povratni tip.", null);
+				functionCall.struct = Tab.noType;
+				
+			} else {
+				functionCall.struct = function.getType();
+				Method method = getMethodByName(function.getName());
+				
+				if(method == null) {
+					errorDetected = true;
+					report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+				} else {
+					if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+						errorDetected = true;
+						report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+					} else {
+						int index = 0;
+						for(ActPar actPar: actPars) {
+							if(index < method.formalParameters.size()) {
+								FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
+								if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
+									errorDetected = true;
+									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+								}
+							} else {
+								OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
+								if(!actPar.struct.assignableTo(optArg.getType().struct)) {
+									errorDetected = true;
+									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+								}
+							}
+							
+							index++;
+						}
+					}
+				}
+			}
+		}
+		
+		actPars.clear();
+	}
+	
+	private Method getMethodByName(String name) {
+		for(Method method: methods) {
+			if(method.methodName.equals(name)) {
+				return method;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void visit(DesignatorIdent designatorIdent) {
@@ -552,6 +671,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(NewObj newObj) {
 		newObj.struct = newObj.getType().struct;
+	}
+	
+	public void visit(ActPar actPar) {
+		actPar.struct = actPar.getExpr().struct;
+		actPars.add(actPar);
 	}
 	
 	public void visit(MultipleCondTerms multipleCondTerms) {

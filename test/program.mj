@@ -1,8 +1,12 @@
 program MJProgram 
 	int x; bool flag; const int konstanta = 3; int array1[]; int array2[];
 { 
+	void function(int x, int y, int z = 3) {
+		
+	} 
+	
 	void f(int x, bool flag2 = false)
-		int z; int a;
+		int z; bool a;
 	{
 		do {
 			x++;
@@ -12,7 +16,8 @@ program MJProgram
 		
 		read(3);
 		
-		functionCall(x, 3);
+		a = function(3, 5);
+		function(2, 1);
 	
 		//continue;
 		return new char[(-3 * 8) * 3 + 4];

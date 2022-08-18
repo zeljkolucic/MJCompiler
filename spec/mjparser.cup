@@ -63,13 +63,13 @@ nonterminal DeclList, Decl, VarDeclaration, MultipleVarDeclarations, VarDecl, Ar
 nonterminal MethodDeclList, MethodDecl, ReturnType, FormalParamList, FormalParamDecl;
 nonterminal StatementList, Statement, DesignatorStatement;
 nonterminal Matched, Unmatched;
-nonterminal ActualPars, ActualParamList;
+nonterminal ActPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgs, OptArg;
 nonterminal DoWhileStatementBegin;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar;
 
 /* Program */
 
@@ -244,7 +244,7 @@ DesignatorStatement ::=	(DesignatorAssignStatement) Designator:designator Assign
 						|
 						(DesignatorDecStatement) Designator DEC
 						|
-						(DesignatorFunctionCall) Designator LPAREN ActualPars RPAREN
+						(DesignatorFunctionCall) Designator LPAREN ActPars RPAREN
 						;
 							
 
@@ -276,20 +276,22 @@ Factor ::= 	(ConstFactor) Const:constant
 			|
 			(Var) Designator:designator
 			|
-			(FunctionCall) Designator:designator LPAREN ActualPars RPAREN
+			(FunctionCall) Designator:designator LPAREN ActPars RPAREN
 			|
 			(NewObj) NEW Type:objType
 			;	
 			
-ActualPars ::=	(ActualPararameters) ActualParamList
-				|
-				(NoActualPars) /* epsilon */
-				;					
+ActPars ::=	(ActualPararameters) ActualParamList
+			|
+			(NoActualPars) /* epsilon */
+			;					
 				
-ActualParamList ::=	(ActualParams) ActualParamList COMMA Expr
+ActualParamList ::=	(ActualParams) ActualParamList COMMA ActPar
 					|
-					(ActualParam) Expr
+					(ActualParam) ActPar
 					;
+					
+ActPar ::= (ActPar) Expr;					
 					
 /* Conditions */
 
