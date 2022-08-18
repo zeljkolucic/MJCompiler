@@ -277,6 +277,39 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		currentMethod = null;
 	}
 	
+	public void visit(FormParametersOnly formParametersOnly) {
+		String methodName = currentMethod.getName();
+		Obj methodObj = Tab.find(methodName);
+		
+		if(methodObj != null) {
+			Method method = getMethodByName(methodName);
+			int level = method.formalParameters.size();
+			methodObj.setLevel(level);
+		}
+	}
+	
+	public void visit(OptionalArgumentsOnly optionalArgumentsOnly) {
+		String methodName = currentMethod.getName();
+		Obj methodObj = Tab.find(methodName);
+		
+		if(methodObj != null) {
+			Method method = getMethodByName(methodName);
+			int level = method.optionalArguments.size();
+			methodObj.setLevel(level);
+		}
+	}
+	
+	public void visit(FormParametersAndOptionalArguments formParametersAndOptionalArguments) {
+		String methodName = currentMethod.getName();
+		Obj methodObj = Tab.find(methodName);
+		
+		if(methodObj != null) {
+			Method method = getMethodByName(methodName);
+			int level = method.formalParameters.size() + method.optionalArguments.size();
+			methodObj.setLevel(level);
+		}
+	}
+	
 	public void visit(FormalParamDeclaration formalParamDeclaration) {
 		Struct type = formalParamDeclaration.getType().struct;
 		String paramName = formalParamDeclaration.getParamName();

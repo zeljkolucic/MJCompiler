@@ -5,7 +5,7 @@ program MJProgram
 		
 	} 
 	
-	void f(int x, bool flag2 = false)
+	void f(int x, bool flag2)
 		int z; bool a;
 	{
 		do {
