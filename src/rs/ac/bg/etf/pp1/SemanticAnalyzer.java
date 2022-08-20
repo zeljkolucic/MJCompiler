@@ -94,6 +94,16 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			report_error("Greska: Ne sme se koristiti vise od " + MAX_GLOBAL_VARIABLES + " globalnih promenljivih.", null);			
 		}
 		
+		Obj main = Tab.find("main");
+		if(main == null || main.getKind() != Obj.Meth) {
+			errorDetected = true;
+			report_error("Greska: Main metoda nije deklarisana.", null);
+			
+		} else if(main.getType() != Tab.noType) {
+			errorDetected = true;
+			report_error("Greska: Main metoda nije ispravno deklarisana.", null);
+		}
+		
 		ProgName progName = program.getProgName();
 		Tab.chainLocalSymbols(progName.obj);
 		Tab.closeScope();
