@@ -1,13 +1,21 @@
 program MJProgram 
-	int x; 
+	int x; int array1[];
 { 
-	void main() {
-		x = 5;
+	int k() int c; {
+		c = 2;
 		print(0);
-		print(2);
-		print(true);
-		print(false);
-		print('a', 5);
-		print(x);
+		return c + 2;
+	}
+
+	void main() {
+	
+		array1 = new int[5];
+		
+		array1[0] = 4;
+		array1[1] = 5;
+		print(array1[0]);
+		
+		array1[0] = array1[0] + array1[1];
+		print(array1[0]);
 	}
 }

@@ -98,6 +98,14 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(BreakStatement breakStatement) {
+		
+	}
+	
+	public void visit(ContinueStatement continueStatement) {
+		
+	}
+	
 	public void visit(ReturnStatement returnStatement) {
 		Code.put(Code.exit);
 		Code.put(Code.return_);
@@ -108,16 +116,61 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.put(Code.return_);
 	}
 	
+	public void visit(DoWhileStatement doWhileStatement) {
+		
+	}
+	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
-		Code.store(designatorAssignStatement.getDesignator().obj);
+		Designator designator =	designatorAssignStatement.getDesignator();
+		
+		if(designator instanceof DesignatorIdent) {
+			Code.store(designatorAssignStatement.getDesignator().obj);
+			
+		} else {
+			DesignatorIdentArray designatorIdentArray = (DesignatorIdentArray) designator;
+			if(designatorIdentArray.getDesignator().obj.getType().getElemType() == Tab.intType || designatorIdentArray.getDesignator().obj.getType().getElemType() == SymbolTable.boolType) {
+				Code.put(Code.astore);
+				
+			} else {
+				Code.put(Code.bastore);
+			}
+		}
 	}
 	
 	public void visit(DesignatorIncStatement designatorIncStatement) {
+		Designator designator = designatorIncStatement.getDesignator();
 		
+		if(designator instanceof DesignatorIdent) {
+			Code.put(Code.const_1);
+			Code.put(Code.add);
+			Code.store(designator.obj);
+			
+		} else if(designator instanceof DesignatorIdentArray) {
+			Code.put(Code.dup2);
+			Code.put(Code.aload);
+			Code.put(Code.const_1);
+			Code.put(Code.add);
+			Code.put(Code.astore);
+			
+		}
 	}
 	
 	public void visit(DesignatorDecStatement designatorDecStatement) {
+		Designator designator = designatorDecStatement.getDesignator();
 		
+		if(designator instanceof DesignatorIdent) {
+			Code.put(Code.const_1);
+			Code.put(Code.sub);
+			Code.store(designator.obj);
+			
+		} else if(designator instanceof DesignatorIdentArray) {
+			Code.put(Code.dup2);
+			Code.put(Code.aload);
+			Code.put(Code.const_1);
+			Code.put(Code.sub);
+			Code.put(Code.astore);
+			
+		}
 	}
 	
 	public void visit(DesignatorFunctionCall designatorFunctionCall) {
@@ -135,9 +188,40 @@ public class CodeGenerator extends VisitorAdaptor {
 	public void visit(DesignatorIdent designatorIdent) {
 		SyntaxNode parent = designatorIdent.getParent();
 		
-		if(DesignatorAssignStatement.class != parent.getClass() && FunctionCall.class != parent.getClass()
-				&& DesignatorFunctionCall.class != parent.getClass()) {
+		if(!(parent instanceof DesignatorAssignStatement) && !(parent instanceof FunctionCall) && !(parent instanceof DesignatorFunctionCall))  {
 			Code.load(designatorIdent.obj);
+		}
+	}
+	
+	public void visit(DesignatorIdentArray designatorIdentArray) {
+		SyntaxNode parent = designatorIdentArray.getParent();
+		
+		if(!(parent instanceof DesignatorAssignStatement) && !(parent instanceof DesignatorIncStatement) && !(parent instanceof DesignatorDecStatement)) {
+			Designator designator = designatorIdentArray.getDesignator();
+
+			if(designator.obj.getType().getElemType() == Tab.intType || designator.obj.getType().getElemType() == SymbolTable.boolType) {
+				Code.put(Code.aload);
+				
+			} else if(designator.obj.getType().getElemType() == Tab.charType) {
+				Code.put(Code.baload);
+			}
+		}
+	}
+	
+	public void visit(AddOpTermExpr addOpTermExpr) {
+		Code.put(Code.add);
+	}
+	
+	public void visit(NegTermExpr negTermExpr) {
+		Code.put(Code.neg);
+	}
+	
+	public void visit(NewArray newArray) {
+		Code.put(Code.newarray);
+		if (newArray.getType().struct == Tab.intType || newArray.getType().struct == SymbolTable.boolType) {
+			Code.put(1);
+		} else if(newArray.getType().struct == Tab.charType) {
+			Code.put(0);
 		}
 	}
 	
