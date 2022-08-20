@@ -43,6 +43,33 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.put(Code.return_);
 	}
 	
+	public void visit(ReadStatement readStatement) {
+		Designator designator = readStatement.getDesignator();
+		
+		if(designator instanceof DesignatorIdent)
+			Code.put(Code.pop); // The designatorIdent is already on stack
+		
+		if(designator.obj.getType() == Tab.intType || designator.obj.getType() == SymbolTable.boolType) {
+			Code.put(Code.read);
+			if(designator instanceof DesignatorIdent) {
+				Code.store(designator.obj);
+				
+			} else {
+				Code.put(Code.astore);
+			}
+			
+		} else if(designator.obj.getType() == Tab.charType) {
+			if(designator instanceof DesignatorIdent) {
+				Code.put(Code.bread);
+				Code.store(designator.obj);
+				
+			} else {
+				Code.put(Code.read);
+				Code.put(Code.bastore);
+			}
+		}
+	}
+	
 	public void visit(PrintStatement printStatement) {
 		Struct exprType = printStatement.getExpr().struct;
 		
