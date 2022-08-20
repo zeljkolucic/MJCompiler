@@ -209,11 +209,34 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(AddOpTermExpr addOpTermExpr) {
-		Code.put(Code.add);
+		Addop addop = addOpTermExpr.getAddop();
+		
+		if(addop instanceof AddopPlus) {
+			Code.put(Code.add);
+			
+		} else {
+			Code.put(Code.sub);
+			
+		}
 	}
 	
 	public void visit(NegTermExpr negTermExpr) {
 		Code.put(Code.neg);
+	}
+	
+	public void visit(MulopFactor mulopFactor) {
+		Mulop mulop = mulopFactor.getMulop();
+		
+		if(mulop instanceof MulopMul) {
+			Code.put(Code.mul);
+			
+		} else if(mulop instanceof MulopDiv) {
+			Code.put(Code.div);
+			
+		} else {
+			Code.put(Code.rem);
+			
+		}
 	}
 	
 	public void visit(NewArray newArray) {
@@ -257,26 +280,5 @@ public class CodeGenerator extends VisitorAdaptor {
 		
 		Code.load(constObj);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

@@ -8,14 +8,14 @@ program MJProgram
 	}
 
 	void main() {
-	
+		x = 5;
 		array1 = new int[5];
 		
 		array1[0] = 4;
 		array1[1] = 5;
 		print(array1[0]);
 		
-		array1[0] = array1[0] + array1[1];
+		array1[0] = array1[0] + array1[1] + 8 / 8 - 3;
 		print(array1[0]);
 	}
 }
