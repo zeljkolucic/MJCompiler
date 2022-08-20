@@ -12,6 +12,7 @@
 				<exclude name="SymbolTable.java" />
 				<exclude name="Compiler.java" />
 				<exclude name="CodeGenerator.java" />
+				<exclude name="CounterVisitor.java" />
 			</fileset>
 		</delete>
 		<delete>
@@ -59,6 +60,24 @@
 				<pathelement path="lib/mj-runtime-1.1.jar"/>
 			</classpath>
 		</javac>
+	</target>
+	
+	<target name="disasm">
+		<java classname="rs.etf.pp1.mj.runtime.disasm">
+			<arg value="test/program.obj"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="runObj" depends="disasm" >
+		<java classname="rs.etf.pp1.mj.runtime.Run">
+			<arg value="test/program.obj"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
 	</target>
 	
 </project>

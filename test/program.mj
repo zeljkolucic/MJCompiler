@@ -2,6 +2,10 @@ program MJProgram
 	int x; 
 { 
 	void main() {
-		x++;
+		print(0);
+		print(2);
+		print(true);
+		print(false);
+		print('a', 5);
 	}
 }
