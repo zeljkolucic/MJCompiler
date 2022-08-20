@@ -487,20 +487,25 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(DesignatorFunctionCall designatorFunctionCall) {
 		Obj function = designatorFunctionCall.getDesignator().obj;
+		boolean isFunctionCallCorrect = true;
 		
 		if(function.getKind() != Obj.Meth) {
 			errorDetected = true;
 			report_error("Greska [" + designatorFunctionCall.getLine() + "]: " + function.getName() + " nije funkcija.", null);
+			isFunctionCallCorrect = false;
 			
 		} else {
 			Method method = getMethodByName(function.getName());
 			if(method == null) {
 				errorDetected = true;
 				report_error("Greska [" + designatorFunctionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+				isFunctionCallCorrect = false;
 			} else {
 				if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
 					errorDetected = true;
 					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+					isFunctionCallCorrect = false;
+					
 				} else {
 					int index = 0;
 					for(ActPar actPar: actPars) {
@@ -509,12 +514,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 							if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
 								errorDetected = true;
 								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+								isFunctionCallCorrect = false;								
 							}
 						} else {
 							OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
 							if(!actPar.struct.assignableTo(optArg.getType().struct)) {
 								errorDetected = true;
 								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+								isFunctionCallCorrect = false;
 							}
 						}
 						
@@ -524,21 +531,29 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			}
 		}
 		
+		if(isFunctionCallCorrect) {
+			log.info("Linija [" + designatorFunctionCall.getLine() + "]: Poziv funkcije " + function.getName() + ".");
+			log.info(designatorFunctionCall.getDesignator().toString(""));
+		}
+		
 		actPars.clear();
 	}
 
 	public void visit(FunctionCall functionCall) {
 		Obj function = functionCall.getDesignator().obj;
+		boolean isFunctionCallCorrect = true;
 		
 		if(function.getKind() != Obj.Meth) {
 			errorDetected = true;
 			report_error("Greska [" + functionCall.getLine() + "]: " + function.getName() + " nije funkcija.", null);
+			isFunctionCallCorrect = false;
 			
 		} else {
 			if(function.getType() == Tab.noType) {
 				errorDetected = true;
 				report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " se ne moze koristiti u izrazu dodele jer nema povratni tip.", null);
 				functionCall.struct = Tab.noType;
+				isFunctionCallCorrect = false;
 				
 			} else {
 				functionCall.struct = function.getType();
@@ -547,10 +562,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				if(method == null) {
 					errorDetected = true;
 					report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+					isFunctionCallCorrect = false;
+					
 				} else {
 					if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
 						errorDetected = true;
 						report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+						isFunctionCallCorrect = false;
+						
 					} else {
 						int index = 0;
 						for(ActPar actPar: actPars) {
@@ -559,12 +578,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 								if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
 									errorDetected = true;
 									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									isFunctionCallCorrect = false;
 								}
 							} else {
 								OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
 								if(!actPar.struct.assignableTo(optArg.getType().struct)) {
 									errorDetected = true;
 									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									isFunctionCallCorrect = false;
 								}
 							}
 							
@@ -573,6 +594,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					}
 				}
 			}
+		}
+		
+		if(isFunctionCallCorrect) {
+			log.info("Linija [" + functionCall.getLine() + "]: Poziv funkcije " + function.getName() + ".");
+			log.info(functionCall.getDesignator().toString(""));
 		}
 		
 		actPars.clear();
@@ -619,7 +645,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			}
 			
 			log.info("Linija [" + designatorIdentArray.getLine() + "]: Pristup elementu niza " + designator.obj.getName() + ".");
-			log.info(designatorIdentArray.obj);
+			log.info(designatorIdentArray.toString(""));
 			
 		} else {
 			errorDetected = true;

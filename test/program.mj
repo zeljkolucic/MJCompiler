@@ -18,6 +18,7 @@ program MJProgram
 		
 		x = array2[3];
 		
+		
 		a = function(3, 5);
 		function(2, 1);
 	
