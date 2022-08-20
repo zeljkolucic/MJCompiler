@@ -83,6 +83,17 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	 */
 	public void visit(Program program) {
 		nVars = Tab.currentScope.getnVars();
+		
+		if(numberOfLocalVariables > MAX_LOCAL_VARIABLES) {
+			errorDetected = true;
+			report_error("Greska: Ne sme se koristiti vise od " + MAX_LOCAL_VARIABLES + " lokalnih promenljivih.", null);		
+		}
+		
+		if(numberOfGlobalVariables > MAX_GLOBAL_VARIABLES) {
+			errorDetected = true;
+			report_error("Greska: Ne sme se koristiti vise od " + MAX_GLOBAL_VARIABLES + " globalnih promenljivih.", null);			
+		}
+		
 		ProgName progName = program.getProgName();
 		Tab.chainLocalSymbols(progName.obj);
 		Tab.closeScope();
