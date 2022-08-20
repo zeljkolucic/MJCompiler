@@ -602,6 +602,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(DesignatorIdentArray designatorIdentArray) {
 		Designator designator = designatorIdentArray.getDesignator();
+		
 		if(designator.obj.getType().getKind() == Struct.Array) {
 			Struct expr = designatorIdentArray.getExpr().struct;
 			if(!expr.compatibleWith(Tab.intType)) {
@@ -616,6 +617,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				
 				designatorIdentArray.obj = new Obj(kind, name, type);
 			}
+			
+			log.info("Linija [" + designatorIdentArray.getLine() + "]: Pristup elementu niza " + designator.obj.getName() + ".");
+			log.info(designatorIdentArray.obj);
+			
 		} else {
 			errorDetected = true;
 			report_error("Greska [" + designatorIdentArray.getLine() + "]: " + designator.obj.getName() + " mora biti deklarisan kao niz!", null);
