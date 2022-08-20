@@ -203,13 +203,18 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			String name = varDeclaration.getVarName();
 			Array array = varDeclaration.getArray();
 			
+			Obj varNode = null;
 			if(array instanceof IsArray) {
 				Struct arrayType = new Struct(Struct.Array);
 				arrayType.setElementType(type);
-				Tab.insert(Obj.Var, name, arrayType);
+				varNode = Tab.insert(Obj.Var, name, arrayType);
 				
 			} else if(array instanceof NotArray) {
-				Tab.insert(Obj.Var, name, type);
+				varNode = Tab.insert(Obj.Var, name, type);
+			}
+			
+			if(varNode != null && currentMethod != null) {
+				varNode.setFpPos(-1);
 			}
 		}
 		
@@ -623,6 +628,18 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			
 		} else {
 			designatorIdent.obj = obj;
+			if(obj.getKind() == Obj.Var) {
+				if(obj.getLevel() == 0) {
+					log.info("Linija [" + designatorIdent.getLine() + "]: Pristup globalnoj promenljivoj " + obj.getName() + ".");
+				} else {
+					if(obj.getFpPos() > -1) {
+						log.info("Linija [" + designatorIdent.getLine() + "]: Pristup formalnom parametru " + obj.getName() + ".");
+					} else {
+						log.info("Linija [" + designatorIdent.getLine() + "]: Pristup lokalnoj promenljivoj " + obj.getName() + ".");
+					}					
+				}
+				log.info(designatorIdent.toString(""));
+			}
 		}
 	}
 	

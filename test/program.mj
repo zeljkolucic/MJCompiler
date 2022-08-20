@@ -18,7 +18,8 @@ program MJProgram
 		
 		x = array2[3];
 		
-		
+		flag2 = true;
+		z = 2;
 		a = function(3, 5);
 		function(2, 1);
 	
