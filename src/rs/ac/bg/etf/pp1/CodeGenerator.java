@@ -71,6 +71,47 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(DesignatorAssignStatement designatorAssignStatement) {
+		Code.store(designatorAssignStatement.getDesignator().obj);
+	}
+	
+	public void visit(DesignatorIncStatement designatorIncStatement) {
+		
+	}
+	
+	public void visit(DesignatorDecStatement designatorDecStatement) {
+		
+	}
+	
+	public void visit(DesignatorFunctionCall designatorFunctionCall) {
+		Obj functionObj = designatorFunctionCall.getDesignator().obj;
+		int offset = functionObj.getAdr() - Code.pc;
+		
+		Code.put(Code.call);
+		Code.put2(offset); // Offset contains 2 bytes
+		
+		if(designatorFunctionCall.getDesignator().obj.getType() != Tab.noType) {
+			Code.put(Code.pop);
+		}
+	}
+	
+	public void visit(DesignatorIdent designatorIdent) {
+		SyntaxNode parent = designatorIdent.getParent();
+		
+		if(DesignatorAssignStatement.class != parent.getClass() && FunctionCall.class != parent.getClass()
+				&& DesignatorFunctionCall.class != parent.getClass()) {
+			Code.load(designatorIdent.obj);
+		}
+	}
+	
+	public void visit(FunctionCall functionCall) {
+		Obj functionObj = functionCall.getDesignator().obj;
+		int offset = functionObj.getAdr() - Code.pc;
+		
+		Code.put(Code.call);
+		Code.put2(offset); // Offset contains 2 bytes
+	}
+	
 	public void visit(BoolConst boolConst) {
 		Obj constObj = Tab.insert(Obj.Con, "$", boolConst.struct);
 		constObj.setLevel(0);
