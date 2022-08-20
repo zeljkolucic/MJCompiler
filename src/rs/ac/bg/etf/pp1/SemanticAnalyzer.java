@@ -35,7 +35,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	private boolean errorDetected = false;
 	
-	private int nVars;
+	int nVars;
 	private int fpPos = 0;
 	
 	private Obj currentMethod = null;

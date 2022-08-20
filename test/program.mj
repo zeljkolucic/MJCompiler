@@ -1,41 +1,7 @@
 program MJProgram 
-	int x; const int x = 3; bool flag; const int konstanta = 3; int array1[]; int array2[];
+	int x; 
 { 
-	void function(int x, int y, int z = 3) {
-		
-	} 
-	
-	void f(int x, bool flag2)
-		int z; bool a;
-	{
-		do {
-			x++;
-			x = 3;
-			continue;
-		} while(x < 3);
-		
-		read(3);
-		
-		x = array2[3];
-		
-		flag2 = true;
-		z = 2;
-		a = function(3, 5);
-		function(2, 1);
-	
-		//continue;
-		return new char[(-3 * 8) * 3 + 4];
-		if (x == 4) {
-			x = 4;
-			a = false;
-		} else { x = 3; }
-		
-		//if(if (x > 3) return; else x++;) else if (x > 3) { }
-		
-		if(x > 3) 
-			if(array1 > array2) break; 
-			
-		return 3;
-		
+	void main() {
+		x++;
 	}
 }
