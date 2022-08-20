@@ -71,6 +71,16 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(ReturnStatement returnStatement) {
+		Code.put(Code.exit);
+		Code.put(Code.return_);
+	}
+	
+	public void visit(ReturnExprStatement returnExprStatement) {
+		Code.put(Code.exit);
+		Code.put(Code.return_);
+	}
+	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
 		Code.store(designatorAssignStatement.getDesignator().obj);
 	}
