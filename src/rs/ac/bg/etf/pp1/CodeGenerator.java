@@ -282,17 +282,51 @@ public class CodeGenerator extends VisitorAdaptor {
 		Obj functionObj = designatorFunctionCall.getDesignator().obj;
 		
 		if("len".equals(functionObj.getName())) {
+			numberOfActualArguments = 0;
 			Code.put(Code.arraylength);
 			return;
 			
-		} else if("ord".equals(functionObj.getName())) {	
+		} else if("ord".equals(functionObj.getName())) {
+			numberOfActualArguments = 0;
 			Code.put(Code.pop);
 			return;
 			
 		} else if("chr".equals(functionObj.getName())) {	
+			numberOfActualArguments = 0;
 			Code.put(Code.pop);
 			return;
 			
+		}
+		
+		Method method = getMethodByName(functionObj.getName());
+		if(method != null) {
+			int numberOfFormalParameters = method.formalParameters.size();
+			int numberOfOptionalArguments = method.optionalArguments.size();
+			
+			if(numberOfActualArguments < numberOfFormalParameters + numberOfOptionalArguments) {
+				for(int i = numberOfActualArguments; i < numberOfOptionalArguments; i++) {
+					Const constant = method.optionalArguments.get(i).getConst();
+					
+					if(constant instanceof NumConst) {
+						int value = ((NumConst) constant).getN1();
+						Code.loadConst(value);
+						
+					} else if(constant instanceof CharConst) {
+						int value = ((CharConst) constant).getC1().charAt(1);
+						Code.loadConst(value);
+						
+					} else if(constant instanceof BoolConst) {
+						String stringValue = ((BoolConst) constant).getBool();
+						if("true".equals(stringValue)) {
+							Code.loadConst(1);
+							
+						} else {
+							Code.loadConst(0);
+							
+						}
+					}
+				}
+			}
 		}
 		
 		int offset = functionObj.getAdr() - Code.pc;
@@ -303,6 +337,8 @@ public class CodeGenerator extends VisitorAdaptor {
 		if(designatorFunctionCall.getDesignator().obj.getType() != Tab.noType) {
 			Code.put(Code.pop);
 		}
+		
+		numberOfActualArguments = 0;
 	}
 	
 	public void visit(DesignatorIdent designatorIdent) {
@@ -316,7 +352,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	public void visit(DesignatorIdentArray designatorIdentArray) {
 		SyntaxNode parent = designatorIdentArray.getParent();
 		
-		if(!(parent instanceof DesignatorAssignStatement) && !(parent instanceof DesignatorIncStatement) && !(parent instanceof DesignatorDecStatement)) {
+		if(!(parent instanceof DesignatorAssignStatement) && !(parent instanceof DesignatorIncStatement) && !(parent instanceof DesignatorDecStatement)
+				&& !(parent instanceof ReadStatement)) {
 			Designator designator = designatorIdentArray.getDesignator();
 
 			if(designator.obj.getType().getElemType() == Tab.intType || designator.obj.getType().getElemType() == SymbolTable.boolType) {
@@ -373,20 +410,61 @@ public class CodeGenerator extends VisitorAdaptor {
 		
 		if("len".equals(functionObj.getName())) {
 			Code.put(Code.arraylength);
+			numberOfActualArguments = 0;
 			return;
 			
-		} else if("ord".equals(functionObj.getName())) {			
+		} else if("ord".equals(functionObj.getName())) {	
+			numberOfActualArguments = 0;
 			return;
 			
-		} else if("chr".equals(functionObj.getName())) {			
+		} else if("chr".equals(functionObj.getName())) {	
+			numberOfActualArguments = 0;
 			return;
 			
+		}
+		
+		Method method = getMethodByName(functionObj.getName());
+		if(method != null) {
+			int numberOfFormalParameters = method.formalParameters.size();
+			int numberOfOptionalArguments = method.optionalArguments.size();
+			
+			if(numberOfActualArguments < numberOfFormalParameters + numberOfOptionalArguments) {
+				int index = numberOfActualArguments - numberOfFormalParameters;
+				for(int i = index; i < numberOfOptionalArguments; i++) {
+					Const constant = method.optionalArguments.get(i).getConst();
+					
+					if(constant instanceof NumConst) {
+						int value = ((NumConst) constant).getN1();
+						Code.loadConst(value);
+						
+					} else if(constant instanceof CharConst) {
+						int value = ((CharConst) constant).getC1().charAt(1);
+						Code.loadConst(value);
+						
+					} else if(constant instanceof BoolConst) {
+						String stringValue = ((BoolConst) constant).getBool();
+						if("true".equals(stringValue)) {
+							Code.loadConst(1);
+							
+						} else {
+							Code.loadConst(0);
+							
+						}
+					}
+				}
+			}
 		}
 		
 		int offset = functionObj.getAdr() - Code.pc;
 		
 		Code.put(Code.call);
 		Code.put2(offset); // Offset contains 2 bytes
+		
+		numberOfActualArguments = 0;
+	}
+	
+	public void visit(ActPar actPar) {
+		numberOfActualArguments++;
 	}
 	
 	/* Conditions */
@@ -564,6 +642,18 @@ public class CodeGenerator extends VisitorAdaptor {
 			
 			Code.load(constObj);
 		}
+	}
+	
+	/* Helpers */
+	
+	private Method getMethodByName(String name) {
+		for(Method method: methods) {
+			if(method.methodName.equals(name)) {
+				return method;
+			}
+		}
+		
+		return null;
 	}
 	
 }

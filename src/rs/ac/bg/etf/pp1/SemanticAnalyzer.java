@@ -51,13 +51,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	class Method {
 		String methodName;
-		List<FormalParamDeclaration> formalParameters;
-		List<OptArg> optionalArguments;
+		ArrayList<FormalParamDeclaration> formalParameters;
+		ArrayList<OptArg> optionalArguments;
 		
 		Method(String methodName) {
 			this.methodName = methodName;
-			this.formalParameters = new LinkedList<>();
-			this.optionalArguments = new LinkedList<>();
+			this.formalParameters = new ArrayList<>();
+			this.optionalArguments = new ArrayList<>();
 		}
 	}
 	
