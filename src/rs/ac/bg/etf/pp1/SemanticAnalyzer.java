@@ -79,6 +79,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Tab.openScope();
 	}
 	
+	private void initializePredeclaredMethods() {
+		Obj ord = Tab.find("ord");
+		
+		Obj chr = Tab.find("");
+	}
+	
 	/**
 	 * Uvezuje lokalne simbole koji pripadaju
 	 * tekucem opsegu i postavlja polje `locals`
@@ -529,37 +535,78 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			isFunctionCallCorrect = false;
 			
 		} else {
-			Method method = getMethodByName(function.getName());
-			if(method == null) {
-				errorDetected = true;
-				report_error("Greska [" + designatorFunctionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
-				isFunctionCallCorrect = false;
-			} else {
-				if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+			if("len".equals(function.getName())) {
+				if(function.getLevel() != actPars.size()) {
 					errorDetected = true;
 					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
 					isFunctionCallCorrect = false;
-					
 				} else {
-					int index = 0;
-					for(ActPar actPar: actPars) {
-						if(index < method.formalParameters.size()) {
-							FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
-							if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
-								errorDetected = true;
-								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
-								isFunctionCallCorrect = false;								
-							}
-						} else {
-							OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
-							if(!actPar.struct.assignableTo(optArg.getType().struct)) {
-								errorDetected = true;
-								report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
-								isFunctionCallCorrect = false;
-							}
-						}
+					if(actPars.getFirst().struct.getKind() != Struct.Array) {
+						errorDetected = true;
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						isFunctionCallCorrect = false;
+					}
+				}
+				
+			} else if("ord".equals(function.getName())) {
+				if(function.getLevel() != actPars.size()) {
+					errorDetected = true;
+					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+					isFunctionCallCorrect = false;
+				} else {
+					if(actPars.getFirst().struct != Tab.charType) {
+						errorDetected = true;
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						isFunctionCallCorrect = false;
+					}
+				}
+				
+			} else if("chr".equals(function.getName())) {
+				if(function.getLevel() != actPars.size()) {
+					errorDetected = true;
+					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+					isFunctionCallCorrect = false;
+				} else {
+					if(actPars.getFirst().struct != Tab.intType) {
+						errorDetected = true;
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						isFunctionCallCorrect = false;
+					}
+				}
+				
+			} else {
+				Method method = getMethodByName(function.getName());
+				if(method == null) {
+					errorDetected = true;
+					report_error("Greska [" + designatorFunctionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+					isFunctionCallCorrect = false;
+				} else {
+					if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+						errorDetected = true;
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+						isFunctionCallCorrect = false;
 						
-						index++;
+					} else {
+						int index = 0;
+						for(ActPar actPar: actPars) {
+							if(index < method.formalParameters.size()) {
+								FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
+								if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
+									errorDetected = true;
+									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									isFunctionCallCorrect = false;								
+								}
+							} else {
+								OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
+								if(!actPar.struct.assignableTo(optArg.getType().struct)) {
+									errorDetected = true;
+									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									isFunctionCallCorrect = false;
+								}
+							}
+							
+							index++;
+						}
 					}
 				}
 			}
@@ -591,39 +638,80 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				
 			} else {
 				functionCall.struct = function.getType();
-				Method method = getMethodByName(function.getName());
-				
-				if(method == null) {
-					errorDetected = true;
-					report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
-					isFunctionCallCorrect = false;
-					
-				} else {
-					if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+				if("len".equals(function.getName())) {
+					if(function.getLevel() != actPars.size()) {
 						errorDetected = true;
 						report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
 						isFunctionCallCorrect = false;
+					} else {
+						if(actPars.getFirst().struct.getKind() != Struct.Array) {
+							errorDetected = true;
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							isFunctionCallCorrect = false;
+						}
+					}
+					
+				} else if("ord".equals(function.getName())) {
+					if(function.getLevel() != actPars.size()) {
+						errorDetected = true;
+						report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+						isFunctionCallCorrect = false;
+					} else {
+						if(actPars.getFirst().struct != Tab.charType) {
+							errorDetected = true;
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							isFunctionCallCorrect = false;
+						}
+					}
+					
+				} else if("chr".equals(function.getName())) {
+					if(function.getLevel() != actPars.size()) {
+						errorDetected = true;
+						report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+						isFunctionCallCorrect = false;
+					} else {
+						if(actPars.getFirst().struct != Tab.intType) {
+							errorDetected = true;
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							isFunctionCallCorrect = false;
+						}
+					}
+					
+				} else {
+					Method method = getMethodByName(function.getName());
+					
+					if(method == null) {
+						errorDetected = true;
+						report_error("Greska [" + functionCall.getLine() + "]: Funkcija " + function.getName() + " nije deklarisana.", null);
+						isFunctionCallCorrect = false;
 						
 					} else {
-						int index = 0;
-						for(ActPar actPar: actPars) {
-							if(index < method.formalParameters.size()) {
-								FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
-								if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
-									errorDetected = true;
-									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
-									isFunctionCallCorrect = false;
-								}
-							} else {
-								OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
-								if(!actPar.struct.assignableTo(optArg.getType().struct)) {
-									errorDetected = true;
-									report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
-									isFunctionCallCorrect = false;
-								}
-							}
+						if(actPars.size() < method.formalParameters.size() || actPars.size() > method.formalParameters.size() + method.optionalArguments.size()) {
+							errorDetected = true;
+							report_error("Greska [" + functionCall.getLine() + "]: Broj formalnih parametara i stvarnih argumenata funkcije nije isti.", null);
+							isFunctionCallCorrect = false;
 							
-							index++;
+						} else {
+							int index = 0;
+							for(ActPar actPar: actPars) {
+								if(index < method.formalParameters.size()) {
+									FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
+									if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
+										errorDetected = true;
+										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+										isFunctionCallCorrect = false;
+									}
+								} else {
+									OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
+									if(!actPar.struct.assignableTo(optArg.getType().struct)) {
+										errorDetected = true;
+										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+										isFunctionCallCorrect = false;
+									}
+								}
+								
+								index++;
+							}
 						}
 					}
 				}

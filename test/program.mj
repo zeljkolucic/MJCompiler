@@ -1,5 +1,5 @@
 program MJProgram 
-	int x; int i; bool flag2;
+	int x; int i; bool flag2; char karakter; int array[];
 { 
 	int sum(int x, int y = 3) {
 		return x + y;
@@ -8,18 +8,13 @@ program MJProgram
 	void main() 
 		int zbir; 
 	{
-		flag2 = true;
-		i = 0;
 		
-		x = 6;
-		print(x);
+		ord('a');
 		
-		do {
-			x++;
-			i++;
-		} while(i < 3 && flag2);
 		
-		print(x);
+		karakter = chr(98);
+		print(karakter);
+		
 		
 	}
 }

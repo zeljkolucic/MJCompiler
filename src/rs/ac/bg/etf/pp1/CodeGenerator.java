@@ -18,6 +18,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
 	private int mainPc;
 	private LinkedList<Method> methods;
+	private int numberOfActualArguments = 0;
 	
 	private boolean returnFound = false;
 	
@@ -277,8 +278,23 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
-	public void visit(DesignatorFunctionCall designatorFunctionCall) {
+	public void visit(DesignatorFunctionCall designatorFunctionCall) {		
 		Obj functionObj = designatorFunctionCall.getDesignator().obj;
+		
+		if("len".equals(functionObj.getName())) {
+			Code.put(Code.arraylength);
+			return;
+			
+		} else if("ord".equals(functionObj.getName())) {	
+			Code.put(Code.pop);
+			return;
+			
+		} else if("chr".equals(functionObj.getName())) {	
+			Code.put(Code.pop);
+			return;
+			
+		}
+		
 		int offset = functionObj.getAdr() - Code.pc;
 		
 		Code.put(Code.call);
@@ -352,8 +368,21 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
-	public void visit(FunctionCall functionCall) {
+	public void visit(FunctionCall functionCall) {		
 		Obj functionObj = functionCall.getDesignator().obj;
+		
+		if("len".equals(functionObj.getName())) {
+			Code.put(Code.arraylength);
+			return;
+			
+		} else if("ord".equals(functionObj.getName())) {			
+			return;
+			
+		} else if("chr".equals(functionObj.getName())) {			
+			return;
+			
+		}
+		
 		int offset = functionObj.getAdr() - Code.pc;
 		
 		Code.put(Code.call);
