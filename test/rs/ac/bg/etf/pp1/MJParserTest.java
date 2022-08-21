@@ -6,12 +6,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.LinkedList;
 
 import java_cup.runtime.Symbol;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import rs.ac.bg.etf.pp1.SemanticAnalyzer.Method;
 import rs.ac.bg.etf.pp1.ast.Program;
 import rs.ac.bg.etf.pp1.util.Log4JUtils;
 import rs.etf.pp1.mj.runtime.Code;
@@ -57,7 +59,8 @@ public class MJParserTest {
 					objFile.delete();
 				FileOutputStream fileOutputStream = new FileOutputStream(objFile);				
 				
-				CodeGenerator codeGenerator = new CodeGenerator();
+				LinkedList<Method> methods = v.getMethods();
+				CodeGenerator codeGenerator = new CodeGenerator(methods);
 				prog.traverseBottomUp(codeGenerator);
 				
 				Code.dataSize = v.nVars;

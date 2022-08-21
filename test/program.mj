@@ -1,21 +1,25 @@
 program MJProgram 
-	int x; int array1[];
+	int x; int i; bool flag2;
 { 
-	int k() int c; {
-		c = 2;
-		print(0);
-		return c + 2;
+	int sum(int x, int y = 3) {
+		return x + y;
 	}
 
-	void main() {
-		x = 5;
-		array1 = new int[5];
+	void main() 
+		int zbir; 
+	{
+		flag2 = true;
+		i = 0;
 		
-		array1[0] = 4;
-		array1[1] = 5;
-		print(array1[0]);
+		x = 6;
+		print(x);
 		
-		array1[0] = array1[0] + array1[1] + 8 / 8 - 3;
-		print(array1[0]);
+		do {
+			x++;
+			i++;
+		} while(i < 3 && flag2);
+		
+		print(x);
+		
 	}
 }

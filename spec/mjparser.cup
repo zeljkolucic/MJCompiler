@@ -66,10 +66,10 @@ nonterminal Matched, Unmatched;
 nonterminal ActPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgs, OptArg;
-nonterminal DoWhileStatementBegin;
+nonterminal DoWhileStatementBegin, IfConditionBegin, ThenStatementEnd, Or, WhileBegin;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition;
 
 /* Program */
 
@@ -205,10 +205,14 @@ Statement ::= 	(MatchedStmt) Matched
 				(UnmatchedStmt) Unmatched
 				;
 				
-Unmatched ::=	(UnmatchedIf) IF IfCondition Statement
+Unmatched ::=	(UnmatchedIf) IfConditionBegin IfCondition Statement ThenStatementEnd
 				|
-				(UnmatchedIfElse) IF IfCondition ELSE Unmatched
+				(UnmatchedIfElse) IfConditionBegin IfCondition Matched ThenStatementEnd ELSE Unmatched 
 				;									
+				
+IfConditionBegin ::=	(IfConditionBegin) IF;				
+
+ThenStatementEnd ::= (ThenStatementEnd) /* epsilon */;
 
 Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|	
@@ -229,14 +233,18 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(ReturnExprStatement) RETURN Expr:expr SEMI
 				|
-				(MatchedStatement) IF IfCondition Matched ELSE Matched
+				(MatchedStatement) IfConditionBegin IfCondition Matched ThenStatementEnd ELSE Matched
 				|
-				(DoWhileStatement) DoWhileStatementBegin Matched WHILE LPAREN Condition RPAREN SEMI
+				(DoWhileStatement) DoWhileStatementBegin Matched WhileBegin LPAREN DoWhileCondition RPAREN SEMI
 				|
 				(Stmt) LBRACE StatementList RBRACE
 				;
 				
-DoWhileStatementBegin ::=	(DoWhileStatementBegin) DO;				
+WhileBegin ::=	(WhileBegin) WHILE;
+				
+DoWhileStatementBegin ::=	(DoWhileStatementBegin) DO;		
+
+DoWhileCondition ::=	(DoWhileCondition) Condition;		
 				
 DesignatorStatement ::=	(DesignatorAssignStatement) Designator:designator Assignop Expr:expr
 						|
@@ -301,11 +309,12 @@ IfCondition ::=	(IfCond) LPAREN Condition RPAREN
 				{: parser.report_error("Izvrsen oporavak do ) na liniji " + lleft, null); :}
 				;
 
-Condition ::=	(MultipleCondTerms) Condition OR CondTerm
+Condition ::=	(MultipleCondTerms) Condition Or CondTerm
 				|
 				(SingleCondTerm) CondTerm
 				;
 
+Or ::= (Or) OR;
 
 CondTerm ::=	(MultipleCondFacts) CondTerm AND CondFact
 				|

@@ -1,5 +1,11 @@
 package rs.ac.bg.etf.pp1;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
+
+import rs.ac.bg.etf.pp1.SemanticAnalyzer.Method;
 import rs.ac.bg.etf.pp1.CounterVisitor.*;
 import rs.ac.bg.etf.pp1.ast.*;
 import rs.ac.bg.etf.pp1.ast.VisitorAdaptor;
@@ -11,6 +17,13 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 public class CodeGenerator extends VisitorAdaptor {
 
 	private int mainPc;
+	private LinkedList<Method> methods;
+	
+	public CodeGenerator(LinkedList<Method> methods) {
+		this.methods = methods;
+	}
+	
+	private CodeGenerator() {}
 	
 	public int getMainPc() {
 		return mainPc;
@@ -29,13 +42,16 @@ public class CodeGenerator extends VisitorAdaptor {
 		FormalParamCounter formalParamCounter = new FormalParamCounter();
 		methodNode.traverseTopDown(formalParamCounter);
 		
+		OptArgsCounter optArgsCounter = new OptArgsCounter();
+		methodNode.traverseTopDown(optArgsCounter);
+		
 		VarCounter varCounter = new VarCounter();
 		methodNode.traverseTopDown(varCounter);
 		
 		// Generate the entry
 		Code.put(Code.enter);
-		Code.put(formalParamCounter.getCount());
-		Code.put(formalParamCounter.getCount() + varCounter.getCount());
+		Code.put(formalParamCounter.getCount() + optArgsCounter.getCount());
+		Code.put(formalParamCounter.getCount() + optArgsCounter.getCount() + varCounter.getCount());
 	}
 	
 	public void visit(MethodDecl methodDecl) {
@@ -99,11 +115,13 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(BreakStatement breakStatement) {
-		
+		Code.putJump(0); 		
+		breakStatementAddressesToPatch.peek().add(Code.pc - 2);
 	}
 	
 	public void visit(ContinueStatement continueStatement) {
-		
+		Code.putJump(0); 		
+		continueStatementAddressesToPatch.peek().add(Code.pc - 2);
 	}
 	
 	public void visit(ReturnStatement returnStatement) {
@@ -116,8 +134,82 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.put(Code.return_);
 	}
 	
-	public void visit(DoWhileStatement doWhileStatement) {
+	/* Do-while statement */
+	
+	private Stack<Integer> doWhileStatementAddressesToPatch = new Stack<Integer>();
+	private Stack<List<Integer>> breakStatementAddressesToPatch = new Stack<List<Integer>>();
+	private Stack<List<Integer>> continueStatementAddressesToPatch = new Stack<List<Integer>>(); 	
+	
+	public void visit(DoWhileStatementBegin doWhileStatementBegin) {
+		orConditionAddressesToPatch.push(new ArrayList<Integer>());
+		andConditionAddressesToPatch.push(new ArrayList<Integer>());
 		
+		doWhileStatementAddressesToPatch.push(Code.pc);
+
+		breakStatementAddressesToPatch.push(new ArrayList<Integer>());
+		continueStatementAddressesToPatch.push(new ArrayList<Integer>());
+	}
+	
+	public void visit(WhileBegin whileBegin) {
+		/* The continue statement interrupts the current iteration of the 
+		 * surrounding `do-while` loop and jumps to the condition check. 
+		 * Therefore, address which that jump refers to needs to be patched.
+		 */
+		for(int addressToPatch: continueStatementAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		continueStatementAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(DoWhileCondition doWhileCondition) {
+		/* The condition consists of multiple conditions which are separated 
+		 * with `or` operator, and if any of them is `true` there has to be
+		 * a jump to the beginning of the `do-while` block which is achieved
+		 * through the following unconditional jump.
+		 */
+		for(int addressToPatch: orConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		orConditionAddressesToPatch.peek().clear();
+		
+		/* After the following instruction is executed, the PC will point to the 
+		 * next address which essentially represents the block which comes after 
+		 * the `do-while` loop.
+		 */
+		Code.putJump(this.doWhileStatementAddressesToPatch.peek());
+		
+		
+		/* If there are no `or` conditions, that means that there are only `and` conditions,
+		 * even if there is only one condition, which if they're not true need to jump to 
+		 * the address right after `do-while` loop.
+		 */
+		for(int addressToPatch: andConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		andConditionAddressesToPatch.peek().clear();
+
+		
+		for(int addressToPatch: breakStatementAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		breakStatementAddressesToPatch.peek().clear(); 
+	}
+	
+	public void visit(DoWhileStatement doWhileStatement) {
+		/* At the end of the `do-while` loop there are no more addresses 
+		 * to be patched and the current scope can be restored to previous
+		 * state. 
+		 */
+		andConditionAddressesToPatch.pop();
+		orConditionAddressesToPatch.pop();
+		
+		doWhileStatementAddressesToPatch.pop();
+		breakStatementAddressesToPatch.pop();
+		continueStatementAddressesToPatch.pop();
 	}
 	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
@@ -130,6 +222,7 @@ public class CodeGenerator extends VisitorAdaptor {
 			DesignatorIdentArray designatorIdentArray = (DesignatorIdentArray) designator;
 			if(designatorIdentArray.getDesignator().obj.getType().getElemType() == Tab.intType || designatorIdentArray.getDesignator().obj.getType().getElemType() == SymbolTable.boolType) {
 				Code.put(Code.astore);
+				
 				
 			} else {
 				Code.put(Code.bastore);
@@ -256,29 +349,181 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.put2(offset); // Offset contains 2 bytes
 	}
 	
-	public void visit(BoolConst boolConst) {
-		Obj constObj = Tab.insert(Obj.Con, "$", boolConst.struct);
-		constObj.setLevel(0);
-		int adr = "true".equals(boolConst.getBool()) ? 1 : 0;
-		constObj.setAdr(adr);
+	/* Conditions */
+	
+	/* The name of the following variables suggests the source of the jump, not the destination. */
+	private Stack<List<Integer>> orConditionAddressesToPatch = new Stack<List<Integer>>();
+	private Stack<List<Integer>> andConditionAddressesToPatch = new Stack<List<Integer>>();
+	private Stack<List<Integer>> thenBlockAddressesToPatch = new Stack<List<Integer>>();
+	
+	public void visit(UnmatchedIfElse unmatchedIfElse) {
+		visitIfElseStatement();	
+	}
+	
+	public void visit(MatchedStatement matchedStatement) {
+		visitIfElseStatement();
+	}
+	
+	private void visitIfElseStatement() {
+		/* Patches the addresses which refer to the block which proceeds after
+		 * `if-else` statement.
+		 */
+		for(int addressToPatch: thenBlockAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
 		
-		Code.load(constObj);
+		thenBlockAddressesToPatch.peek().clear();
+		
+		thenBlockAddressesToPatch.pop();
+		andConditionAddressesToPatch.pop();
+		orConditionAddressesToPatch.pop();
+	}
+	
+	public void visit(UnmatchedIf unmatchedIf) {
+		/* At the end of the if statement, there are no more addresses 
+		 * to be patched and the current scope can be restored to previous
+		 * state. 
+		 * 
+		 * All of the addresses which refer to the block which comes
+		 * after `if` statement have been processed in visit method of the 
+		 * ThenStatementEnd.
+		 */
+		andConditionAddressesToPatch.pop();
+		orConditionAddressesToPatch.pop();
+		thenBlockAddressesToPatch.pop();
+	}
+	
+	public void visit(IfConditionBegin ifConditionBegin) {
+		/* At the beginning of the if statement, a new scope is open so 
+		 * that the addresses can be patched in case of a forward jump to
+		 * an unknown address.
+		 */
+		orConditionAddressesToPatch.push(new ArrayList<Integer>());
+		andConditionAddressesToPatch.push(new ArrayList<Integer>());
+		thenBlockAddressesToPatch.push(new ArrayList<Integer>());
+	}
+	
+	public void visit(IfCond ifCond) {
+		/* The condition consists of multiple conditions which are separated 
+		 * with `or` operator, and if any of them is `true` there has to be
+		 * a jump to the beginning of `then` block.
+		 */
+		for(int addressToPatch: orConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		orConditionAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(ThenStatementEnd thenStatementEnd) {
+		/* If there is an else block, at the end of `then` block there has to be an
+		 * unconditional jump to the address right after `else` block. 
+		 */
+		if(thenStatementEnd.getParent() instanceof UnmatchedIfElse || thenStatementEnd.getParent() instanceof MatchedStatement) {
+			Code.putJump(0); 		
+			thenBlockAddressesToPatch.peek().add(Code.pc - 2); 
+		}
+		
+		/* If there are no `or` conditions, that means that there are only `and` conditions,
+		 * even if there is only one condition, which if they're not true need to jump to 
+		 * the address right after `then` block, whatever proceeds, either `else` block, or if 
+		 * there is no such, then whatever comes next after `then` block. 
+		 */
+		for(int addressToPatch: andConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		andConditionAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(Or or) {
+		/* If the condition on the left side of the `or` operator is true, then the rest of
+		 * the condition is ignored.
+		 */
+		Code.putJump(0); 		
+		orConditionAddressesToPatch.peek().add(Code.pc - 2);
+				
+		/* If the condition of the left side of the `or` operator is false, then there has to be
+		 * a jump to the right side of the `or` operator and the rest of the condition needs to be 
+		 * checked.
+		 */
+		for(int addressToPatch: andConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		andConditionAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(CondFactExpr condFactExpr) {
+		/* There is one boolean value on ExprStack which needs to be checked for equality with 
+		 * `true` boolean value which is represented as an integer value of `1`.
+		*/		
+		Code.loadConst(1);
+		Code.putFalseJump(Code.eq, 0);
+		
+		andConditionAddressesToPatch.peek().add(Code.pc - 2);
+	}
+	
+	public void visit(CondFactRelopExpr condFactRelopExpr) {
+		/* There are two integer values on ExprStack */ 
+		
+		Relop relop = condFactRelopExpr.getRelop();
+		
+		if(relop instanceof RelopEqual) {
+			Code.putFalseJump(Code.eq, 0);
+			
+		} else if(relop instanceof RelopNotEqual) {
+			Code.putFalseJump(Code.ne, 0);
+			
+		} else if(relop instanceof RelopLessOrEqual) {
+			Code.putFalseJump(Code.le, 0);
+			
+		} else if(relop instanceof RelopGreaterOrEqual) {
+			Code.putFalseJump(Code.ge, 0);
+			
+		} else if(relop instanceof RelopLess) {
+			Code.putFalseJump(Code.lt, 0);
+			
+		} else if(relop instanceof RelopGreater) {
+			Code.putFalseJump(Code.gt, 0);
+			
+		}
+		
+		/* `And` condition is the most nested one, therefore a conditional jump
+		 * will always be generated after such condition.
+		 */
+		andConditionAddressesToPatch.peek().add(Code.pc - 2);
+	}
+	
+	public void visit(BoolConst boolConst) {
+		if(!(boolConst.getParent() instanceof OptArg) ) {
+			Obj constObj = Tab.insert(Obj.Con, "$", boolConst.struct);
+			constObj.setLevel(0);
+			int adr = "true".equals(boolConst.getBool()) ? 1 : 0;
+			constObj.setAdr(adr);
+			
+			Code.load(constObj);
+		}
 	}
 	
 	public void visit(CharConst charConst) {
-		Obj constObj = Tab.insert(Obj.Con, "$", charConst.struct);
-		constObj.setLevel(0);
-		constObj.setAdr(charConst.getC1().charAt(1));
-		
-		Code.load(constObj);
+		if(!(charConst.getParent() instanceof OptArg)) {
+			Obj constObj = Tab.insert(Obj.Con, "$", charConst.struct);
+			constObj.setLevel(0);
+			constObj.setAdr(charConst.getC1().charAt(1));
+			
+			Code.load(constObj);
+		}
 	}
 	
 	public void visit(NumConst numConst) {
-		Obj constObj = Tab.insert(Obj.Con, "$", numConst.struct);
-		constObj.setLevel(0);
-		constObj.setAdr(numConst.getN1());
-		
-		Code.load(constObj);
+		if(!(numConst.getParent() instanceof OptArg) ) {
+			Obj constObj = Tab.insert(Obj.Con, "$", numConst.struct);
+			constObj.setLevel(0);
+			constObj.setAdr(numConst.getN1());
+			
+			Code.load(constObj);
+		}
 	}
 	
 }

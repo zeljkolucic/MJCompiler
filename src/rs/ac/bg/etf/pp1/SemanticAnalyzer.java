@@ -61,6 +61,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
+	public LinkedList<Method> getMethods() {
+		return methods;
+	}
+	
 	/**
 	 * Dodaje objektni cvor u tabelu simbola
 	 * i cuva referencu na njega. Otvara novi opseg
@@ -453,12 +457,16 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 	
 	public void visit(DoWhileStatement doWhileStatement) {
-		Struct conditionType = doWhileStatement.getCondition().struct;
+		Struct conditionType = doWhileStatement.getDoWhileCondition().struct;
 		if(conditionType != SymbolTable.boolType) {
 			errorDetected = true;
 			report_error("Greska [" + doWhileStatement.getLine() + "]: Uslovni izraz Condition mora biti tipa bool.", null);
 		}
 		doWhileNestedLevel--;
+	}
+	
+	public void visit(DoWhileCondition doWhileCondition) {
+		doWhileCondition.struct = doWhileCondition.getCondition().struct;
 	}
 	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
