@@ -144,6 +144,9 @@ public class CodeGenerator extends VisitorAdaptor {
 		orConditionAddressesToPatch.push(new ArrayList<Integer>());
 		andConditionAddressesToPatch.push(new ArrayList<Integer>());
 		
+		/* Save the address which refers to the beginning of the `do` block.
+		 * A stack data structure is used to support nested `do-while` loops.
+		 */
 		doWhileStatementAddressesToPatch.push(Code.pc);
 
 		breakStatementAddressesToPatch.push(new ArrayList<Integer>());
