@@ -7,13 +7,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import java_cup.runtime.Symbol;
+import rs.ac.bg.etf.pp1.SemanticAnalyzer.Method;
 import rs.ac.bg.etf.pp1.ast.Program;
 import rs.ac.bg.etf.pp1.util.Log4JUtils;
+import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.Tab;
 
 public class Compiler {
@@ -58,6 +61,20 @@ public class Compiler {
 			Tab.dump();
 			
 			if(!p.errorDetected && v.passed()) {
+				File objFile = new File("test/" + filePath + ".obj");
+				if(objFile.exists()) 
+					objFile.delete();
+				FileOutputStream fileOutputStream = new FileOutputStream(objFile);				
+				
+				LinkedList<Method> methods = v.getMethods();
+				CodeGenerator codeGenerator = new CodeGenerator(methods);
+				prog.traverseBottomUp(codeGenerator);
+				
+				Code.dataSize = v.nVars;
+				Code.mainPc = codeGenerator.getMainPc();
+				
+				Code.write(fileOutputStream);
+				
 				log.info("Parsiranje uspesno zavrseno!");
 			} else {
 				log.error("Parsiranje nije uspesno zavrseno!");
