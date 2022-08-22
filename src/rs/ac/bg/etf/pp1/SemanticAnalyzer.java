@@ -65,11 +65,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		return methods;
 	}
 	
-	/**
-	 * Dodaje objektni cvor u tabelu simbola
-	 * i cuva referencu na njega. Otvara novi opseg
-	 * koji pripada programu.
-	 */
 	public void visit(ProgName progName) {
 		int kind = Obj.Prog;
 		String name = progName.getProgramName();
@@ -85,12 +80,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Obj chr = Tab.find("");
 	}
 	
-	/**
-	 * Uvezuje lokalne simbole koji pripadaju
-	 * tekucem opsegu i postavlja polje `locals`
-	 * klase ProgramName koja predstavlja objektni
-	 * cvor. Zatvara tekuci opseg.
-	 */
 	public void visit(Program program) {
 		nVars = Tab.currentScope.getnVars();
 		
@@ -119,14 +108,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Tab.closeScope();
 	}
 	
-	/**
-	 * Ispituje da li se dati tip vec nalazi u tabeli
-	 * simbola, i ukoliko se ne nalazi to znaci da 
-	 * nije validan tip. Ukoliko se nalazi, a vrsta 
-	 * tog cvora nije Type, to znaci da je u nekom 
-	 * ugnjezdenijem opsegu korisnik koristio kljucnu 
-	 * rijec za naziv promjenljive.
-	 */
 	public void visit(Type type) {
 		String typeName = type.getTypeName();
 		Obj typeNode = Tab.find(typeName);
@@ -146,12 +127,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
-	/**
-	 * Obradjuje deklaracije konstanti odvojene zapetama.
-	 * Dodaje deklarisanu konstantu u tabelu simbola, ispituje 
-	 * tip pojedinacne konstante i upisuje njenu vrednost u 
-	 * `adr` polje objektnog cvora.  
-	 */
 	public void visit(ConstDeclarations constDeclarations) {
 		Struct type = constDeclarations.getType().struct;
 		for(ConstDecl constDeclaration: this.constDeclarations) {
@@ -224,11 +199,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		visitVarDeclarations(type);
 	}
 	
-	/**
-	 * Pomocna metoda za obradu deklaracija promenljivih odvojenih zapetama.
-	 * Dodaje deklarisanu promenljivu u tabelu simbola i ispituje 
-	 * tip pojedinacne promenljive.  
-	 */
 	private void visitVarDeclarations(Struct type) {
 		for(VarDecl varDeclaration: this.varDeclarations) {
 			String name = varDeclaration.getVarName();
@@ -271,11 +241,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		varDeclarations.add(varDecl);
 	}
 	
-	/**
-	 * Obradjuje deklaraciju methode i dodaje je 
-	 * u tabelu simbola. Otvara novi opseg za datu
-	 * metodu.
-	 */
 	public void visit(MethodTypeName methodTypeName) {
 		fpPos = 0;
 		
@@ -295,11 +260,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		methods.add(method);
 	}
 	
-	/**
-	 * Proverava da li metoda koja se trenutno obradjuje 
-	 * ima return iskaz u zavisnosti od njenog povratnog tipa.
-	 * Uvezuje promenljive iz tekuceg opsega i zatvara taj opseg.
-	 */
 	public void visit(MethodDecl methodDecl) {
 		if(!returnFound && currentMethod.getType() != Tab.noType) {
 			errorDetected = true;
@@ -788,11 +748,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}			
 	}
 	
-	/**
-	 * Oba sabirka moraju da budu istog tipa, i to konkretno 
-	 * tipa int, u suprotnom se radi o gresci.
-	 */
 	public void visit(AddOpTermExpr addOpTermExpr) {
+		/* Both expressions need to be of same type, that is 
+		 * type `int` otherwise there has been an error.
+		 */
 		Struct te = addOpTermExpr.getExpr().struct;
 		Struct t = addOpTermExpr.getTerm().struct;
 		
@@ -806,11 +765,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
-	/**
-	 * S obzirom da se radi o negaciji izraza, tip Term-a
-	 * mora da bude int, u suprotnom se radi o gresci.
-	 */
 	public void visit(NegTermExpr negTermExpr) {
+		/* Only `int` values can be multiplied by `-1`, therefore
+		 * if `Term` type is not `int`, there has been an error.
+		 */
 		Struct type = negTermExpr.getTerm().struct;
 		if(!type.assignableTo(Tab.intType)) {
 			errorDetected = true;
@@ -826,12 +784,15 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		posTermExpr.struct = posTermExpr.getTerm().struct;
 	}
 	
-	/**
-	 * Ukoliko je tip Factor-a int, tada i MulFacList mora da bude
-	 * istog tipa, jer zajedno ucestvuju u operaciji mnozenja. Tip Factor-a
-	 * ne mora da bude int, i tada celi Term dobija isti tip kao i dati Factor.
-	 */
 	public void visit(Term term) {
+		/* If `Factor` type is `int`, then MulFacList also has to be
+		 * of type `int`, because they together participate in multiplication
+		 * operation. 
+		 * 
+		 * However, `Factor` type doesn't have to be `int`, and then `Term` 
+		 * is of same type as the given `Factor`.
+		 */
+		
 		Struct factorType = term.getFactor().struct;
 		MulFacList mulFacList = term.getMulFacList();
 		
@@ -848,12 +809,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 	
-	/**
-	 * S obzirom da se radi o operaciji mnozenja, 
-	 * jedino ima smisla da su cinioci tipa int. U suprotnom,
-	 * radi se o gresci.
-	 */
 	public void visit(MulopFactor mulopFactor) {
+		/* Only values of type `int` can be multiplied.
+		 */
 		Struct factorType = mulopFactor.getFactor().struct;
 		if(!factorType.assignableTo(Tab.intType)) {
 			errorDetected = true;
