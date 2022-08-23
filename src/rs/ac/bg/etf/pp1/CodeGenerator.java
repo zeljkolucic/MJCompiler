@@ -20,8 +20,6 @@ public class CodeGenerator extends VisitorAdaptor {
 	private LinkedList<Method> methods;
 	private int numberOfActualArguments = 0;
 	
-	private boolean returnFound = false;
-	
 	public CodeGenerator(LinkedList<Method> methods) {
 		this.methods = methods;
 	}
@@ -33,8 +31,6 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(MethodTypeName methodTypeName) {
-		returnFound = false;
-		
 		if("main".equals(methodTypeName.getMethodName())) {
 			mainPc = Code.pc;
 		}
@@ -60,10 +56,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(MethodDecl methodDecl) {
-		if(!returnFound) {
-			Code.put(Code.exit);
-			Code.put(Code.return_);
-		}
+		Code.put(Code.exit);
+		Code.put(Code.return_);
 	}
 	
 	public void visit(ReadStatement readStatement) {
@@ -132,13 +126,11 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(ReturnStatement returnStatement) {
-		returnFound = true;
 		Code.put(Code.exit);
 		Code.put(Code.return_);
 	}
 	
 	public void visit(ReturnExprStatement returnExprStatement) {
-		returnFound = true;
 		Code.put(Code.exit);
 		Code.put(Code.return_);
 	}
