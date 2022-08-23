@@ -17,6 +17,7 @@ import rs.ac.bg.etf.pp1.ast.Program;
 import rs.ac.bg.etf.pp1.util.Log4JUtils;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.Tab;
+import rs.etf.pp1.symboltable.concepts.Scope;
 
 public class Compiler {
 
@@ -26,21 +27,24 @@ public class Compiler {
 	}
 	
 	public static void tsdump() {
-		
+		MySymbolTableVisitor symbolTableVisitor = new MySymbolTableVisitor();
+		Scope sc = Tab.currentScope;
+		sc.accept(symbolTableVisitor);
+		System.out.println(symbolTableVisitor.getOutput());
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
-		String filePath = args[0];
-		if(filePath.contains("/")) {
-			filePath = filePath.substring(filePath.lastIndexOf('/') + 1);
+		String fileName = args[0];
+		if(fileName.contains("/")) {
+			fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
 		}
 		
 		Logger log = Logger.getLogger(Compiler.class);
 		
 		Reader br = null;
 		try {
-			File sourceCode = new File("test/" + filePath + ".mj");
+			File sourceCode = new File("test/" + fileName + ".mj");
 			log.info("Compiling source file: " + sourceCode.getAbsolutePath());
 			
 			br = new BufferedReader(new FileReader(sourceCode));
@@ -57,10 +61,14 @@ public class Compiler {
 			SemanticAnalyzer v = new SemanticAnalyzer();
 			prog.traverseBottomUp(v); 
 			
-			Tab.dump();
+			System.out.println("=====================SYMBOL TABLE DUMP=========================");
+			tsdump();
 			
 			if(!p.errorDetected && v.passed()) {
-				File objFile = new File("test/" + filePath + ".obj");
+				log.info("Parsiranje uspesno zavrseno!");
+				
+				String outputFilePath = args[1];
+				File objFile = new File(outputFilePath + fileName + ".obj");
 				if(objFile.exists()) 
 					objFile.delete();
 				FileOutputStream fileOutputStream = new FileOutputStream(objFile);				
@@ -74,7 +82,6 @@ public class Compiler {
 				
 				Code.write(fileOutputStream);
 				
-				log.info("Parsiranje uspesno zavrseno!");
 			} else {
 				log.error("Parsiranje nije uspesno zavrseno!");
 			}

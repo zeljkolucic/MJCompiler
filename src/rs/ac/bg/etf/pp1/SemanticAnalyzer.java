@@ -503,7 +503,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				} else {
 					if(actPars.getFirst().struct.getKind() != Struct.Array) {
 						errorDetected = true;
-						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 						isFunctionCallCorrect = false;
 					}
 				}
@@ -516,7 +516,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				} else {
 					if(actPars.getFirst().struct != Tab.charType) {
 						errorDetected = true;
-						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 						isFunctionCallCorrect = false;
 					}
 				}
@@ -529,7 +529,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				} else {
 					if(actPars.getFirst().struct != Tab.intType) {
 						errorDetected = true;
-						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+						report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 						isFunctionCallCorrect = false;
 					}
 				}
@@ -553,14 +553,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 								FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
 								if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
 									errorDetected = true;
-									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + (index + 1) + " nije isti kao tip formalnog parametra.", null);
 									isFunctionCallCorrect = false;								
 								}
 							} else {
 								OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
 								if(!actPar.struct.assignableTo(optArg.getType().struct)) {
 									errorDetected = true;
-									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+									report_error("Greska [" + designatorFunctionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + (index  + 1) + " nije isti kao tip formalnog parametra.", null);
 									isFunctionCallCorrect = false;
 								}
 							}
@@ -606,7 +606,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					} else {
 						if(actPars.getFirst().struct.getKind() != Struct.Array) {
 							errorDetected = true;
-							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 							isFunctionCallCorrect = false;
 						}
 					}
@@ -619,7 +619,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					} else {
 						if(actPars.getFirst().struct != Tab.charType) {
 							errorDetected = true;
-							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 							isFunctionCallCorrect = false;
 						}
 					}
@@ -632,7 +632,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					} else {
 						if(actPars.getFirst().struct != Tab.intType) {
 							errorDetected = true;
-							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 0 nije isti kao tip formalnog parametra.", null);
+							report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji 1 nije isti kao tip formalnog parametra.", null);
 							isFunctionCallCorrect = false;
 						}
 					}
@@ -658,14 +658,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 									FormalParamDeclaration formalParamDeclaration = method.formalParameters.get(index);
 									if(!actPar.struct.assignableTo(formalParamDeclaration.getType().struct)) {
 										errorDetected = true;
-										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + (index + 1) + " nije isti kao tip formalnog parametra.", null);
 										isFunctionCallCorrect = false;
 									}
 								} else {
 									OptArg optArg = method.optionalArguments.get(index - method.formalParameters.size());
 									if(!actPar.struct.assignableTo(optArg.getType().struct)) {
 										errorDetected = true;
-										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + index + " nije isti kao tip formalnog parametra.", null);
+										report_error("Greska [" + functionCall.getLine() + "]: Tip stvarnog argumenta na poziciji " + (index  + 1) + " nije isti kao tip formalnog parametra.", null);
 										isFunctionCallCorrect = false;
 									}
 								}

@@ -13,6 +13,7 @@
 				<exclude name="Compiler.java" />
 				<exclude name="CodeGenerator.java" />
 				<exclude name="CounterVisitor.java" />
+				<exclude name="MySymbolTableVisitor.java" />
 			</fileset>
 		</delete>
 		<delete>
