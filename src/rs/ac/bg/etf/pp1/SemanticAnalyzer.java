@@ -855,6 +855,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	public void visit(NewObj newObj) {
 		newObj.struct = newObj.getType().struct;
+		if(newObj.struct.getKind() != Struct.Class) {
+			errorDetected = true;
+			report_error("Greska [" + newObj.getLine() + "]: Operator new se moze koristiti samo sa klasnim tipom.", null);
+		}
 	}
 	
 	public void visit(ActPar actPar) {
