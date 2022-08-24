@@ -5,10 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import org.apache.log4j.Logger;
+
 import rs.ac.bg.etf.pp1.SemanticAnalyzer.Method;
 import rs.ac.bg.etf.pp1.CounterVisitor.*;
 import rs.ac.bg.etf.pp1.ast.*;
-import rs.ac.bg.etf.pp1.ast.VisitorAdaptor;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
@@ -20,6 +21,19 @@ public class CodeGenerator extends VisitorAdaptor {
 	private LinkedList<Method> methods;
 	private int numberOfActualArguments = 0;
 	
+	private static final int MAX_DATA_SIZE = 8192;
+	
+	Logger log = Logger.getLogger(getClass());
+	
+	public void report_error(String message, SyntaxNode info) {
+		StringBuilder msg = new StringBuilder(message);
+		int line = (info == null) ? 0 : info.getLine();
+		if (line != 0)
+			msg.append(" na liniji ").append(line);
+		log.error(msg.toString());
+		System.err.println(msg.toString());
+	}
+	
 	public CodeGenerator(LinkedList<Method> methods) {
 		this.methods = methods;
 	}
@@ -28,6 +42,12 @@ public class CodeGenerator extends VisitorAdaptor {
 	
 	public int getMainPc() {
 		return mainPc;
+	}
+	
+	public void visit(Program program) {
+		if(Code.pc > MAX_DATA_SIZE) {
+			report_error("Izvorni kod programa ne sme biti veci od 8 KB.", null);
+		}
 	}
 	
 	public void visit(MethodTypeName methodTypeName) {

@@ -74,12 +74,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Tab.openScope();
 	}
 	
-	private void initializePredeclaredMethods() {
-		Obj ord = Tab.find("ord");
-		
-		Obj chr = Tab.find("");
-	}
-	
 	public void visit(Program program) {
 		nVars = Tab.currentScope.getnVars();
 		
