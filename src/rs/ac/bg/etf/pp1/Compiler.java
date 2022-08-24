@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.util.LinkedList;
 
@@ -39,6 +41,21 @@ public class Compiler {
 		if(fileName.contains("/")) {
 			fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
 		}
+		
+		File outputFile = new File("test/out/" + fileName + ".out");
+		outputFile.createNewFile();
+		
+		File outputErrorFile = new File("test/err/" + fileName + ".err");
+		outputErrorFile.createNewFile();
+		
+		OutputStream outputStream = new FileOutputStream(outputFile);
+		OutputStream errorOutputStream = new FileOutputStream(outputErrorFile);
+		
+		PrintStream printOutputStream = new PrintStream(outputStream);
+		PrintStream printOutputErrorStream = new PrintStream(errorOutputStream);
+
+		System.setOut(printOutputStream);
+		System.setErr(printOutputErrorStream);
 		
 		Logger log = Logger.getLogger(Compiler.class);
 		

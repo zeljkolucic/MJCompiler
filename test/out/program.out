@@ -1,0 +1,72 @@
+Linija [10]: Pristup formalnom parametru p1.
+DesignatorIdent(
+ p1
+) [DesignatorIdent]
+Linija [10]: Pristup formalnom parametru p2.
+DesignatorIdent(
+ p2
+) [DesignatorIdent]
+Linija [10]: Pristup formalnom parametru p3.
+DesignatorIdent(
+ p3
+) [DesignatorIdent]
+Linija [14]: Pristup formalnom parametru p1.
+DesignatorIdent(
+ p1
+) [DesignatorIdent]
+Linija [18]: Pristup formalnom parametru p1.
+DesignatorIdent(
+ p1
+) [DesignatorIdent]
+Linija [18]: Pristup formalnom parametru p2.
+DesignatorIdent(
+ p2
+) [DesignatorIdent]
+Linija [23]: Pristup globalnoj promenljivoj a.
+DesignatorIdent(
+ a
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f2.
+DesignatorIdent(
+ f2
+) [DesignatorIdent]
+Linija [24]: Pristup globalnoj promenljivoj a.
+DesignatorIdent(
+ a
+) [DesignatorIdent]
+=====================SYMBOL TABLE DUMP=========================
+Type int: int, -1, -1 
+Type char: char, -1, -1 
+Con eol: char, 10, 0 
+Con null: Class [], 0, 0 
+Meth chr: char, 0, 1 
+   Var i: int, 0, 1 
+
+Meth ord: int, 0, 1 
+   Var ch: char, 0, 1 
+
+Meth len: int, 0, 1 
+   Var arr: Arr of notype, 0, 1 
+
+Type bool: , -1, -1 
+Prog test3: notype, 0, 1 
+   Var a: int, 0, 0 
+   Var b: int, 1, 0 
+   Var c: int, 2, 0 
+   Var niz: Arr of int, 3, 0 
+   Meth f1: int, 0, 3 
+      Var p1: int, 0, 1 
+      Var p2: int, 1, 1 
+      Var p3: int, 2, 1 
+
+   Meth f2: int, 0, 1 
+      Var p1: int, 0, 1 
+
+   Meth f3: int, 0, 2 
+      Var p1: int, 0, 1 
+      Var p2: int, 1, 1 
+
+   Meth main: notype, 0, 0 
+
+
+

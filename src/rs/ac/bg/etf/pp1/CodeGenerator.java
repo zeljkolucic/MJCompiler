@@ -19,7 +19,8 @@ public class CodeGenerator extends VisitorAdaptor {
 
 	private int mainPc;
 	private LinkedList<Method> methods;
-	private int numberOfActualArguments = 0;
+	private Stack<Integer> numberOfActualArgumentsStack = new Stack<Integer>();
+//	private int numberOfActualArguments = 0;
 	
 	private static final int MAX_DATA_SIZE = 8192;
 	
@@ -293,6 +294,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	public void visit(DesignatorFunctionCall designatorFunctionCall) {		
 		Obj functionObj = designatorFunctionCall.getDesignator().obj;
 		
+		int numberOfActualArguments = numberOfActualArgumentsStack.pop();
+		
 		if("len".equals(functionObj.getName())) {
 			numberOfActualArguments = 0;
 			Code.put(Code.arraylength);
@@ -349,8 +352,6 @@ public class CodeGenerator extends VisitorAdaptor {
 		if(designatorFunctionCall.getDesignator().obj.getType() != Tab.noType) {
 			Code.put(Code.pop);
 		}
-		
-		numberOfActualArguments = 0;
 	}
 	
 	public void visit(DesignatorIdent designatorIdent) {
@@ -358,6 +359,10 @@ public class CodeGenerator extends VisitorAdaptor {
 		
 		if(!(parent instanceof DesignatorAssignStatement) && !(parent instanceof FunctionCall) && !(parent instanceof DesignatorFunctionCall))  {
 			Code.load(designatorIdent.obj);
+		}
+		
+		if(designatorIdent.obj.getKind() == Obj.Meth) {
+			numberOfActualArgumentsStack.push(new Integer(0));
 		}
 	}
 	
@@ -420,6 +425,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	public void visit(FunctionCall functionCall) {		
 		Obj functionObj = functionCall.getDesignator().obj;
 		
+		int numberOfActualArguments = numberOfActualArgumentsStack.pop();
+		
 		if("len".equals(functionObj.getName())) {
 			Code.put(Code.arraylength);
 			numberOfActualArguments = 0;
@@ -471,12 +478,12 @@ public class CodeGenerator extends VisitorAdaptor {
 		
 		Code.put(Code.call);
 		Code.put2(offset); // Offset contains 2 bytes
-		
-		numberOfActualArguments = 0;
 	}
 	
 	public void visit(ActPar actPar) {
+		int numberOfActualArguments = numberOfActualArgumentsStack.pop();
 		numberOfActualArguments++;
+		numberOfActualArgumentsStack.push(numberOfActualArguments);
 	}
 	
 	/* Conditions */
