@@ -1,0 +1,85 @@
+Linija [6]: Pristup globalnoj promenljivoj x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [7]: Pristup globalnoj promenljivoj x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [9]: Pristup globalnoj promenljivoj array.
+DesignatorIdent(
+ array
+) [DesignatorIdent]
+Linija [10]: Pristup globalnoj promenljivoj array.
+DesignatorIdent(
+ array
+) [DesignatorIdent]
+Linija [10]: Pristup elementu niza array.
+DesignatorIdentArray(
+  DesignatorIdent(
+   array
+  ) [DesignatorIdent]
+  PosTermExpr(
+    Term(
+      ConstFactor(
+        NumConst(
+         0
+        ) [NumConst]
+      ) [ConstFactor]
+      NoMulopFactor(
+      ) [NoMulopFactor]
+    ) [Term]
+  ) [PosTermExpr]
+) [DesignatorIdentArray]
+Linija [11]: Pristup globalnoj promenljivoj array.
+DesignatorIdent(
+ array
+) [DesignatorIdent]
+Linija [11]: Pristup elementu niza array.
+DesignatorIdentArray(
+  DesignatorIdent(
+   array
+  ) [DesignatorIdent]
+  PosTermExpr(
+    Term(
+      ConstFactor(
+        NumConst(
+         0
+        ) [NumConst]
+      ) [ConstFactor]
+      NoMulopFactor(
+      ) [NoMulopFactor]
+    ) [Term]
+  ) [PosTermExpr]
+) [DesignatorIdentArray]
+Linija [13]: Pristup globalnoj promenljivoj y.
+DesignatorIdent(
+ y
+) [DesignatorIdent]
+Linija [14]: Pristup globalnoj promenljivoj y.
+DesignatorIdent(
+ y
+) [DesignatorIdent]
+=====================SYMBOL TABLE DUMP=========================
+Type int: int, -1, -1 
+Type char: char, -1, -1 
+Con eol: char, 10, 0 
+Con null: Class [], 0, 0 
+Meth chr: char, 0, 1 
+   Var i: int, 0, 1 
+
+Meth ord: int, 0, 1 
+   Var ch: char, 0, 1 
+
+Meth len: int, 0, 1 
+   Var arr: Arr of notype, 0, 1 
+
+Type bool: , -1, -1 
+Prog MJProgram: notype, 0, 1 
+   Var x: int, 0, 0 
+   Var y: char, 1, 0 
+   Var array: Arr of int, 2, 0 
+   Meth main: notype, 0, 0 
+
+
+

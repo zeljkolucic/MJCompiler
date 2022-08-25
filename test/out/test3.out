@@ -1,0 +1,91 @@
+Linija [6]: Pristup formalnom parametru x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [6]: Pristup formalnom parametru y.
+DesignatorIdent(
+ y
+) [DesignatorIdent]
+Linija [11]: Pristup globalnoj promenljivoj x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [12]: Pristup globalnoj promenljivoj y.
+DesignatorIdent(
+ y
+) [DesignatorIdent]
+Linija [14]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+Linija [14]: Poziv funkcije sum.
+DesignatorIdent(
+ sum
+) [DesignatorIdent]
+Linija [15]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+Linija [17]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+Linija [17]: Pristup globalnoj promenljivoj x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [17]: Poziv funkcije sum.
+DesignatorIdent(
+ sum
+) [DesignatorIdent]
+Linija [18]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+Linija [20]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+Linija [20]: Pristup globalnoj promenljivoj x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+Linija [20]: Pristup globalnoj promenljivoj y.
+DesignatorIdent(
+ y
+) [DesignatorIdent]
+Linija [20]: Poziv funkcije sum.
+DesignatorIdent(
+ sum
+) [DesignatorIdent]
+Linija [21]: Pristup globalnoj promenljivoj z.
+DesignatorIdent(
+ z
+) [DesignatorIdent]
+=====================SYMBOL TABLE DUMP=========================
+Type int: int, -1, -1 
+Type char: char, -1, -1 
+Con eol: char, 10, 0 
+Con null: Class [], 0, 0 
+Meth chr: char, 0, 1 
+   Var i: int, 0, 1 
+
+Meth ord: int, 0, 1 
+   Var ch: char, 0, 1 
+
+Meth len: int, 0, 1 
+   Var arr: Arr of notype, 0, 1 
+
+Type bool: , -1, -1 
+Prog MJProgram: notype, 0, 1 
+   Var x: int, 0, 0 
+   Var y: int, 1, 0 
+   Var z: int, 2, 0 
+   Meth sum: int, 0, 2 
+      Var x: int, 0, 1 
+      Var y: int, 1, 1 
+
+   Meth main: notype, 0, 0 
+
+
+

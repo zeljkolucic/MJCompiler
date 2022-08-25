@@ -85,9 +85,9 @@ public class Compiler {
 				log.info("Parsiranje uspesno zavrseno!");
 				
 				String outputFilePath = args[1];
-				File objFile = new File(outputFilePath + fileName + ".obj");
-				if(objFile.exists()) 
-					objFile.delete();
+				File objFile = new File(outputFilePath + "program.obj");
+				objFile.createNewFile();
+				
 				FileOutputStream fileOutputStream = new FileOutputStream(objFile);				
 				
 				LinkedList<Method> methods = v.getMethods();

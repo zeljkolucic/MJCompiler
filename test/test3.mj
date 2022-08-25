@@ -1,0 +1,24 @@
+program MJProgram
+	int x; int y; int z;
+{
+	int sum(int x = 0, int y = 1) 
+	{
+		return x + y;
+	}
+
+	void main() 
+	{
+		x = 5;
+		y = 6;
+		
+		z = sum();
+		print(z);
+		
+		z = sum(x);
+		print(z);
+		
+		z = sum(x, y);
+		print(z);
+		
+	}
+}

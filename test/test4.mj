@@ -1,0 +1,25 @@
+program test5
+	char c1, c2, c3;
+	int a, b, c;
+	int niz[], niz2[];
+{
+	void main()
+	{
+		read(c1);
+		print(c1);
+		
+		read(a);
+		print(a);
+		
+		read(b);
+		print(b*2, 3);
+		read(c);
+		print(c, 10);
+		
+		do{
+			read(a);
+			print(a);
+			c--;
+		} while(c>0);	
+	}
+}

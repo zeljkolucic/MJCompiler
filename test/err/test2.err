@@ -1,0 +1,16 @@
+Greska [6]: Cinilac mora da bude tipa int!
+Greska [8]: Cinilac mora da bude tipa int!
+Greska [8]: Nekompatibilni tipovi u izrazu dodele!
+Greska [11]: Nekomaptibilni tipovi u izrazu za sabiranje!
+Greska [11]: Nekompatibilni tipovi u izrazu dodele!
+Greska [15]: Tipovi oba izraza moraju biti kompatibilni.
+Greska [15]: Tip uslovnog izraza Condition mora biti bool.
+Greska [16]: Tip izraza u return naredbi se ne slaze sa tipom povratne vrednosti funkcije!
+Greska [17]: Tipovi oba izraza moraju biti kompatibilni.
+Greska [17]: Tip uslovnog izraza Condition mora biti bool.
+Greska [18]: Jedino se promenljiva tipa int moze inkrementirati!
+Greska [20]: Nekomaptibilni tipovi u izrazu za sabiranje!
+Greska [20]: Nekompatibilni tipovi u izrazu dodele!
+Greska [21]: Nije moguce promeniti vrednost konstante!
+Greska [23]: Tip izraza u return naredbi se ne slaze sa tipom povratne vrednosti funkcije!
+Greska: Main metoda nije ispravno deklarisana.

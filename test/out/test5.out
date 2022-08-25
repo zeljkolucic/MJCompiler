@@ -30,6 +30,34 @@ Linija [23]: Poziv funkcije f2.
 DesignatorIdent(
  f2
 ) [DesignatorIdent]
+Linija [23]: Poziv funkcije f1.
+DesignatorIdent(
+ f1
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f3.
+DesignatorIdent(
+ f3
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f2.
+DesignatorIdent(
+ f2
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f1.
+DesignatorIdent(
+ f1
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f2.
+DesignatorIdent(
+ f2
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f3.
+DesignatorIdent(
+ f3
+) [DesignatorIdent]
+Linija [23]: Poziv funkcije f1.
+DesignatorIdent(
+ f1
+) [DesignatorIdent]
 Linija [24]: Pristup globalnoj promenljivoj a.
 DesignatorIdent(
  a

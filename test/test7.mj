@@ -1,0 +1,39 @@
+program test6
+
+int a, b, c;
+int niz[], niz2[];
+
+char c1, c2, c3;
+{
+
+	void main(){
+		niz = new int[3];
+		niz2 = new int[4];
+		
+		a = len(niz) * len(niz2);
+		
+		if(a == 12)
+			print(1);
+		else
+			print(-1);
+			
+		c1='a';
+		b = ord(c1);
+		c = ord('z');
+		if(c - b == 25)
+			print(1);
+		else
+			print(-1);
+			
+		c2 = chr(b);
+		c3 = chr(c);
+		
+		if(c2 == 'a' && c3 == 'z')
+			print(1);
+		else
+			print(-1);
+		
+		
+	}
+
+}

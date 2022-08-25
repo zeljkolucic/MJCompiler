@@ -1,0 +1,27 @@
+Linija [5]: Pristup formalnom parametru x.
+DesignatorIdent(
+ x
+) [DesignatorIdent]
+=====================SYMBOL TABLE DUMP=========================
+Type int: int, -1, -1 
+Type char: char, -1, -1 
+Con eol: char, 10, 0 
+Con null: Class [], 0, 0 
+Meth chr: char, 0, 1 
+   Var i: int, 0, 1 
+
+Meth ord: int, 0, 1 
+   Var ch: char, 0, 1 
+
+Meth len: int, 0, 1 
+   Var arr: Arr of notype, 0, 1 
+
+Type bool: , -1, -1 
+Prog MJProgram: notype, 0, 1 
+   Meth sum: int, 0, 1 
+      Var x: int, 0, 1 
+
+   Meth main: notype, 0, 0 
+
+
+

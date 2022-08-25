@@ -1,0 +1,45 @@
+program MJProgram
+	int x; int y; const int one = 1; int i; bool flag;
+{
+
+	void main() 
+	{
+		x = 5;
+		i = 0;
+		flag = true;
+		
+		print(x); 
+		
+		do {
+			x++;
+			i++;
+			if(x % 8 == 0)
+				break;		
+		} while(i < 10 && flag);
+		
+		print(x);
+		
+		y = 16;
+		
+		if(x >= y + one) {
+			print(1);
+		} else {
+			print(-1);
+		}
+		
+		do {
+			x++;
+			
+			if(x >= 10)
+				continue;
+				
+			y--;
+			
+		} while(x <= y + one);
+		
+		print(x);
+		print(y);
+		
+	}
+
+}
