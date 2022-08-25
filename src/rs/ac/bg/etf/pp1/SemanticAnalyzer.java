@@ -48,7 +48,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private LinkedList<VarDecl> varDeclarations = new LinkedList<>();
 	
 	private Stack<LinkedList<ActPar>> actParsStack = new Stack<LinkedList<ActPar>>();
-//	private LinkedList<ActPar> actPars = new LinkedList<>();
 	
 	private LinkedList<Method> methods = new LinkedList<>();
 
