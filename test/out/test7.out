@@ -1,99 +1,27 @@
 Linija [10]: Pristup globalnoj promenljivoj niz.
-DesignatorIdent(
- niz
-) [DesignatorIdent]
 Linija [11]: Pristup globalnoj promenljivoj niz2.
-DesignatorIdent(
- niz2
-) [DesignatorIdent]
 Linija [13]: Pristup globalnoj promenljivoj a.
-DesignatorIdent(
- a
-) [DesignatorIdent]
 Linija [13]: Pristup globalnoj promenljivoj niz.
-DesignatorIdent(
- niz
-) [DesignatorIdent]
 Linija [13]: Poziv funkcije len.
-DesignatorIdent(
- len
-) [DesignatorIdent]
 Linija [13]: Pristup globalnoj promenljivoj niz2.
-DesignatorIdent(
- niz2
-) [DesignatorIdent]
 Linija [13]: Poziv funkcije len.
-DesignatorIdent(
- len
-) [DesignatorIdent]
 Linija [15]: Pristup globalnoj promenljivoj a.
-DesignatorIdent(
- a
-) [DesignatorIdent]
 Linija [20]: Pristup globalnoj promenljivoj c1.
-DesignatorIdent(
- c1
-) [DesignatorIdent]
 Linija [21]: Pristup globalnoj promenljivoj b.
-DesignatorIdent(
- b
-) [DesignatorIdent]
 Linija [21]: Pristup globalnoj promenljivoj c1.
-DesignatorIdent(
- c1
-) [DesignatorIdent]
 Linija [21]: Poziv funkcije ord.
-DesignatorIdent(
- ord
-) [DesignatorIdent]
 Linija [22]: Pristup globalnoj promenljivoj c.
-DesignatorIdent(
- c
-) [DesignatorIdent]
 Linija [22]: Poziv funkcije ord.
-DesignatorIdent(
- ord
-) [DesignatorIdent]
 Linija [23]: Pristup globalnoj promenljivoj c.
-DesignatorIdent(
- c
-) [DesignatorIdent]
 Linija [23]: Pristup globalnoj promenljivoj b.
-DesignatorIdent(
- b
-) [DesignatorIdent]
 Linija [28]: Pristup globalnoj promenljivoj c2.
-DesignatorIdent(
- c2
-) [DesignatorIdent]
 Linija [28]: Pristup globalnoj promenljivoj b.
-DesignatorIdent(
- b
-) [DesignatorIdent]
 Linija [28]: Poziv funkcije chr.
-DesignatorIdent(
- chr
-) [DesignatorIdent]
 Linija [29]: Pristup globalnoj promenljivoj c3.
-DesignatorIdent(
- c3
-) [DesignatorIdent]
 Linija [29]: Pristup globalnoj promenljivoj c.
-DesignatorIdent(
- c
-) [DesignatorIdent]
 Linija [29]: Poziv funkcije chr.
-DesignatorIdent(
- chr
-) [DesignatorIdent]
 Linija [31]: Pristup globalnoj promenljivoj c2.
-DesignatorIdent(
- c2
-) [DesignatorIdent]
 Linija [31]: Pristup globalnoj promenljivoj c3.
-DesignatorIdent(
- c3
-) [DesignatorIdent]
 =====================SYMBOL TABLE DUMP=========================
 Type int: int, -1, -1 
 Type char: char, -1, -1 

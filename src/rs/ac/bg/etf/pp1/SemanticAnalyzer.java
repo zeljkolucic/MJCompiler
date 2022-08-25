@@ -625,7 +625,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 		if (isFunctionCallCorrect) {
 			report_info("Linija [" + designatorFunctionCall.getLine() + "]: Poziv funkcije " + function.getName() + ".", null);
-			report_info(designatorFunctionCall.getDesignator().toString(""), null);
+			// report_info(designatorFunctionCall.getDesignator().toString(""), null);
 		}
 	}
 
@@ -757,7 +757,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		if (isFunctionCallCorrect) {
 			report_info("Linija [" + functionCall.getLine() + "]: Poziv funkcije " + function.getName() + ".", null);
-			report_info(functionCall.getDesignator().toString(""), null);
+//			report_info(functionCall.getDesignator().toString(""), null);
 		}
 	}
 
@@ -795,7 +795,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 								+ obj.getName() + ".", null);
 					}
 				}
-				report_info(designatorIdent.toString(""), null);			
+//				report_info(designatorIdent.toString(""), null);	
+				
 			} else if(obj.getKind() == Obj.Meth) {
 				actParsStack.push(new LinkedList<>());
 			}
@@ -823,7 +824,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 			report_info("Linija [" + designatorIdentArray.getLine() + "]: Pristup elementu niza "
 					+ designator.obj.getName() + ".", null);
-			report_info(designatorIdentArray.toString(""), null);
+//			report_info(designatorIdentArray.toString(""), null);
 
 		} else {
 			errorDetected = true;
