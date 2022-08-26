@@ -1,4 +1,4 @@
-program test6
+program MJProgram
 
 int a, b, c;
 int niz[], niz2[];
@@ -10,17 +10,17 @@ char c1, c2, c3;
 		niz = new int[3];
 		niz2 = new int[4];
 		
-		a = len(niz) * len(niz2);
+		a = len(niz) + len(niz2);
 		
-		if(a == 12)
+		if(a == 7)
 			print(1);
 		else
 			print(-1);
 			
-		c1='a';
+		c1 = 'b';
 		b = ord(c1);
-		c = ord('z');
-		if(c - b == 25)
+		c = ord('y');
+		if(c - b == 23)
 			print(1);
 		else
 			print(-1);
@@ -28,12 +28,10 @@ char c1, c2, c3;
 		c2 = chr(b);
 		c3 = chr(c);
 		
-		if(c2 == 'a' && c3 == 'z')
+		if(c2 == 'b' && c3 == 'y')
 			print(1);
 		else
 			print(-1);
-		
-		
 	}
 
 }

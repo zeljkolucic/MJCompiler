@@ -37,7 +37,7 @@ Meth len: int, 0, 1
    Var arr: Arr of notype, 0, 1 
 
 Type bool: , -1, -1 
-Prog test6: notype, 0, 1 
+Prog MJProgram: notype, 0, 1 
    Var a: int, 0, 0 
    Var b: int, 1, 0 
    Var c: int, 2, 0 

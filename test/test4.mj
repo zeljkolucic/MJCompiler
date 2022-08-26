@@ -1,7 +1,6 @@
-program test5
-	char c1, c2, c3;
+program MJProgram
+	char c1;
 	int a, b, c;
-	int niz[], niz2[];
 {
 	void main()
 	{
