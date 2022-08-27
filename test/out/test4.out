@@ -1,15 +1,16 @@
-Linija [7]: Pristup globalnoj promenljivoj c1.
-Linija [8]: Pristup globalnoj promenljivoj c1.
-Linija [10]: Pristup globalnoj promenljivoj a.
-Linija [11]: Pristup globalnoj promenljivoj a.
-Linija [13]: Pristup globalnoj promenljivoj b.
-Linija [14]: Pristup globalnoj promenljivoj b.
-Linija [15]: Pristup globalnoj promenljivoj c.
-Linija [16]: Pristup globalnoj promenljivoj c.
-Linija [19]: Pristup globalnoj promenljivoj a.
-Linija [20]: Pristup globalnoj promenljivoj a.
-Linija [21]: Pristup globalnoj promenljivoj c.
-Linija [22]: Pristup globalnoj promenljivoj c.
+Linija [8]: Pristup globalnoj promenljivoj array.
+Linija [10]: Pristup globalnoj promenljivoj c1.
+Linija [11]: Pristup globalnoj promenljivoj c1.
+Linija [13]: Pristup globalnoj promenljivoj a.
+Linija [14]: Pristup globalnoj promenljivoj a.
+Linija [16]: Pristup globalnoj promenljivoj b.
+Linija [17]: Pristup globalnoj promenljivoj b.
+Linija [18]: Pristup globalnoj promenljivoj c.
+Linija [19]: Pristup globalnoj promenljivoj c.
+Linija [22]: Pristup globalnoj promenljivoj a.
+Linija [23]: Pristup globalnoj promenljivoj a.
+Linija [24]: Pristup globalnoj promenljivoj c.
+Linija [25]: Pristup globalnoj promenljivoj c.
 =====================SYMBOL TABLE DUMP=========================
 Type int: int, -1, -1 
 Type char: char, -1, -1 
@@ -30,6 +31,7 @@ Prog MJProgram: notype, 0, 1
    Var a: int, 1, 0 
    Var b: int, 2, 0 
    Var c: int, 3, 0 
+   Var array: Arr of int, 4, 0 
    Meth main: notype, 0, 0 
 
 

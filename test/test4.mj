@@ -1,9 +1,12 @@
 program MJProgram
 	char c1;
 	int a, b, c;
+	int array[];
 {
 	void main()
 	{
+		array = new var[3];
+		
 		read(c1);
 		print(c1);
 		

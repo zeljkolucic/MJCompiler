@@ -252,14 +252,21 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	public void visit(MethodTypeName methodTypeName) {
 		fpPos = 0;
-
+		
+		String name = methodTypeName.getMethodName();
+		Obj methodObj = Tab.find(name);
+		if(methodObj != null && methodObj.getKind() == Obj.Meth) {
+			errorDetected = true;
+			report_error("Greska [" + methodTypeName.getLine() + "]: Metoda " + name + " je vec deklarisana.", null);
+		}
+		
 		ReturnType returnType = methodTypeName.getReturnType();
 		Struct type = Tab.noType;
 
 		if (returnType instanceof RetType)
 			type = ((RetType) returnType).getType().struct;
 
-		String name = methodTypeName.getMethodName();
+		
 		currentMethod = Tab.insert(Obj.Meth, name, type);
 
 		methodTypeName.obj = currentMethod;

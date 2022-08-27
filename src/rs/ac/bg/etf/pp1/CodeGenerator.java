@@ -488,7 +488,7 @@ public class CodeGenerator extends VisitorAdaptor {
 	
 	/* Conditions */
 	
-	/* The name of the following variables suggests the source of the jump, not the destination. */
+	/* The names of the following variables suggest the source of the jump, not the destination. */
 	private Stack<List<Integer>> orConditionAddressesToPatch = new Stack<List<Integer>>();
 	private Stack<List<Integer>> andConditionAddressesToPatch = new Stack<List<Integer>>();
 	private Stack<List<Integer>> thenBlockAddressesToPatch = new Stack<List<Integer>>();

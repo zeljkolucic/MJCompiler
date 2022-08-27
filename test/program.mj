@@ -1,0 +1,14 @@
+program MJProgram
+	int x; int y;
+{
+	int f(int x, int y) {
+		return x + y;
+	}
+	
+	void main() {
+		x = 0;
+		y = 1;
+		if(x > y || x == 0) 
+			print(x);
+	}
+}
