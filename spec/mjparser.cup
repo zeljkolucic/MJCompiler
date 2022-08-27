@@ -66,10 +66,10 @@ nonterminal Matched, Unmatched;
 nonterminal ActPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgs, OptArg;
-nonterminal DoWhileStatementBegin, IfConditionBegin, ThenStatementEnd, Or, WhileBegin;
+nonterminal DoWhileStatementBegin, IfConditionBegin, ThenStatementEnd, Or, WhileBegin, WhileStatementBegin, WhileStatementEnd;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition, WhileCondition;
 
 /* Program */
 
@@ -237,12 +237,20 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(DoWhileStatement) DoWhileStatementBegin Matched WhileBegin LPAREN DoWhileCondition RPAREN SEMI
 				|
+				(WhileStatement) WhileStatementBegin LPAREN WhileCondition RPAREN Matched WhileStatementEnd
+				|
 				(Stmt) LBRACE StatementList RBRACE
 				;
+				
+WhileStatementBegin ::= (WhileStatementBegin) WHILE;				
+
+WhileStatementEnd ::= (WhileStatementEnd) /* epsilon */;
 				
 WhileBegin ::=	(WhileBegin) WHILE;
 				
 DoWhileStatementBegin ::=	(DoWhileStatementBegin) DO;		
+
+WhileCondition ::= 	(WhileCondition) Condition;
 
 DoWhileCondition ::=	(DoWhileCondition) Condition;		
 				

@@ -159,6 +159,7 @@ public class CodeGenerator extends VisitorAdaptor {
 	/* Do-while statement */
 	
 	private Stack<Integer> doWhileStatementAddressesToPatch = new Stack<Integer>();
+	private Stack<Integer> whileStatementAddressesToPatch = new Stack<Integer>();
 	private Stack<List<Integer>> breakStatementAddressesToPatch = new Stack<List<Integer>>();
 	private Stack<List<Integer>> continueStatementAddressesToPatch = new Stack<List<Integer>>(); 	
 	
@@ -175,6 +176,32 @@ public class CodeGenerator extends VisitorAdaptor {
 		continueStatementAddressesToPatch.push(new ArrayList<Integer>());
 	}
 	
+	public void visit(WhileStatementBegin whileStatementBegin) {
+		orConditionAddressesToPatch.push(new ArrayList<Integer>());
+		andConditionAddressesToPatch.push(new ArrayList<Integer>());
+		
+		/* Save the address which refers to the beginning of the `while` block.
+		 * A stack data structure is used to support nested `while` loops.
+		 */
+		whileStatementAddressesToPatch.push(Code.pc);
+
+		breakStatementAddressesToPatch.push(new ArrayList<Integer>());
+		continueStatementAddressesToPatch.push(new ArrayList<Integer>());
+	}
+	
+	public void visit(WhileStatement whileStatement) {
+		/* At the end of the `while` loop there are no more addresses 
+		 * to be patched and the current scope can be restored to previous
+		 * state. 
+		 */
+		andConditionAddressesToPatch.pop();
+		orConditionAddressesToPatch.pop();
+		
+		whileStatementAddressesToPatch.pop();
+		breakStatementAddressesToPatch.pop();
+		continueStatementAddressesToPatch.pop();
+	}
+	
 	public void visit(WhileBegin whileBegin) {
 		/* The continue statement interrupts the current iteration of the 
 		 * surrounding `do-while` loop and jumps to the condition check. 
@@ -185,6 +212,43 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 		
 		continueStatementAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(WhileStatementEnd whileStatementEnd) {
+		/* The condition consists of multiple conditions which are separated 
+		 * with `or` operator, and if any of them is `true` there has to be
+		 * a jump to the beginning of the `do-while` block which is achieved
+		 * through the following unconditional jump.
+		 */
+		for(int addressToPatch: orConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		orConditionAddressesToPatch.peek().clear();
+		
+		/* After the following instruction is executed, the PC will point to the 
+		 * next address which essentially represents the block which comes after 
+		 * the `do-while` loop.
+		 */
+		Code.putJump(this.whileStatementAddressesToPatch.peek());
+		
+		
+		/* If there are no `or` conditions, that means that there are only `and` conditions,
+		 * even if there is only one condition, which if they're not true need to jump to 
+		 * the address right after `do-while` loop.
+		 */
+		for(int addressToPatch: andConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		andConditionAddressesToPatch.peek().clear();
+
+		
+		for(int addressToPatch: breakStatementAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		breakStatementAddressesToPatch.peek().clear(); 
 	}
 	
 	public void visit(DoWhileCondition doWhileCondition) {

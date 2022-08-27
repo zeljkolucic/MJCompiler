@@ -450,12 +450,29 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	public void visit(DoWhileStatement doWhileStatement) {
 		Struct conditionType = doWhileStatement.getDoWhileCondition().struct;
+		visitWhileLoop(conditionType, doWhileStatement.getLine());
+	}
+	
+	public void visit(WhileStatementBegin whileStatementBegin) {
+		doWhileNestedLevel++;
+	}
+	
+	public void visit(WhileStatement whileStatement) {
+		Struct conditionType = whileStatement.getWhileCondition().struct;
+		visitWhileLoop(conditionType, whileStatement.getLine());
+	}
+	
+	private void visitWhileLoop(Struct conditionType, int line) {
 		if (conditionType != SymbolTable.boolType) {
 			errorDetected = true;
-			report_error("Greska [" + doWhileStatement.getLine() + "]: Uslovni izraz Condition mora biti tipa bool.",
+			report_error("Greska [" + line + "]: Uslovni izraz Condition mora biti tipa bool.",
 					null);
 		}
 		doWhileNestedLevel--;
+	}
+	
+	public void visit(WhileCondition whileCondition) {
+		whileCondition.struct = whileCondition.getCondition().struct;
 	}
 
 	public void visit(DoWhileCondition doWhileCondition) {
