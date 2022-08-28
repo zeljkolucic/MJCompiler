@@ -881,6 +881,32 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		coalesceExpr.struct = coalesceExpr.getCoalesceExpression().struct;
 	}
 	
+	public void visit(TernaryExpr ternaryExpr) {
+		ternaryExpr.struct = ternaryExpr.getTernary().struct;
+	}
+	
+	public void visit(Ternary ternary) {
+		Struct trueExpression = ternary.getExpression().struct;
+		Struct falseExpression = ternary.getExpression1().struct;
+		
+		if(!trueExpression.compatibleWith(falseExpression)) {
+			errorDetected = true;
+			report_error("Greska [" + ternary.getLine() + "]: Oba izraza moraju biti istog tipa.", null);
+			ternary.struct = Tab.noType;
+			
+		} else {
+			ternary.struct = trueExpression;
+		}
+	}
+	
+	public void visit(TernaryCondition ternaryCondition) {
+		Struct conditionType = ternaryCondition.getExpression().struct;
+		if(conditionType != SymbolTable.boolType) {
+			errorDetected = true;
+			report_error("Greska [" + ternaryCondition.getLine() + "]: Uslov ternarnog operator mora biti tipa bool.", null);
+		}
+	}
+	
 	public void visit(CoalesceExpression coalesceExpression) {
 		Struct te = coalesceExpression.getExpression().struct;
 		Struct t = coalesceExpression.getExpr().struct;

@@ -52,7 +52,7 @@ terminal PROGRAM, READ, PRINT, CONST;
 terminal IF, ELSE, FOR, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
 terminal SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; 
-terminal COALESCE, QUESTION_MARK;
+terminal COALESCE, QUESTION_MARK, COLON;
 
 terminal Integer NUM_CONST;
 terminal String CHAR_CONST;
@@ -68,11 +68,12 @@ nonterminal ActPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgs, OptArg;
 nonterminal DoWhileStatementBegin, IfConditionBegin, ThenStatementEnd, Or, WhileBegin, WhileStatementBegin, WhileStatementEnd;
-nonterminal ForLoopBegin, ForLoopEnd, ForInitialization, ForIteration, ForIterationBegin, ForConditionBegin;
+nonterminal ForLoopBegin, ForLoopEnd, ForInitialization, ForIteration, ForIterationBegin, ForConditionBegin, TernaryTrue, TernaryFalse;
+
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition, WhileCondition;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct ForCondition, CoalesceExpression, Expression, ExpressionList;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ForCondition, CoalesceExpression, Expression, Ternary, TernaryCondition;
 
 /* Program */
 
@@ -290,7 +291,18 @@ Designator ::=	(DesignatorIdent) IDENT
 				
 Expr ::= 	(JustExpr) Expression 
 			|
-			(CoalesceExpr) CoalesceExpression;									
+			(CoalesceExpr) CoalesceExpression
+			|
+			(TernaryExpr) Ternary
+			;			
+			
+Ternary ::= (Ternary) TernaryCondition TernaryTrue Expression:e1 TernaryFalse Expression:e2;		
+
+TernaryCondition ::=	(TernaryCondition) Expression;	
+			
+TernaryTrue ::=	(TernaryTrue) QUESTION_MARK;
+
+TernaryFalse ::= (TernaryFalse) COLON;									
 				
 Expression ::=	(AddOpTermExpr) Expression:te Addop Term:t
 				|
@@ -306,8 +318,7 @@ Term ::=	(Term) Factor:f MulFacList;
 MulFacList ::= 	(MulopFactor) MulFacList Mulop Factor 
 				|
 				(NoMulopFactor) /* epsilon */
-				;
-						
+				;						
 			
 Factor ::= 	(ConstFactor) Const:constant
 			|
@@ -320,7 +331,7 @@ Factor ::= 	(ConstFactor) Const:constant
 			(FunctionCall) Designator:designator LPAREN ActPars RPAREN
 			|
 			(NewObj) NEW Type:objType
-			;	
+			;			
 			
 ActPars ::=	(ActualPararameters) ActualParamList
 			|

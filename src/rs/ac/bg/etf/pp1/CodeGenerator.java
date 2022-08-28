@@ -578,6 +578,28 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.put(Code.pop);
 	}
 	
+	public void visit(Ternary ternary) {
+		// Get the condition on top of the stack
+		Code.put(Code.dup_x2);
+		Code.put(Code.pop);
+		Code.put(Code.dup_x2);
+		Code.put(Code.pop);
+		Code.loadConst(1);
+		
+		Code.putFalseJump(Code.ne, 0);
+		int addressToPatch = Code.pc - 2;
+		
+		// If the condition is false, then the first expression needs to be popped from the stack
+		Code.put(Code.dup_x1);
+		Code.put(Code.pop);
+		Code.put(Code.pop);
+		Code.putJump(Code.pc + 4); // Size of the `jmp` instruction is 3 bytes, and syze of the `pop` instruction is 1 byte
+		
+		// If the condition is true, then the second expression needs to be popped from the stack
+		Code.fixup(addressToPatch);
+		Code.put(Code.pop);			
+	}
+	
 	public void visit(AddOpTermExpr addOpTermExpr) {
 		Addop addop = addOpTermExpr.getAddop();
 		

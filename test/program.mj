@@ -1,14 +1,13 @@
 program MJProgram
-	int x; int i;
+	int x; int i; bool condition;
 {
 	int f(int x, int y) {
 		return x + y;
 	}
 	
 	void main() {
-		i = 0;
-		x = i + 0 ?? 0 ?? 3;
-		
+		condition = false;
+		x = condition ? 1 * 8 : 2 + 4 * 1;
 		print(x);
 	}
 }
