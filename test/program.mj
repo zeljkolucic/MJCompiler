@@ -6,8 +6,7 @@ program MJProgram
 	}
 	
 	void main() {
-		condition = false;
-		x = condition ? 1 * 8 : 2 + 4 * 1;
+		x = 3!;
 		print(x);
 	}
 }

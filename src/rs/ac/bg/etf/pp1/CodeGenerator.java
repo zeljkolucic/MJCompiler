@@ -850,6 +850,21 @@ public class CodeGenerator extends VisitorAdaptor {
 		andConditionAddressesToPatch.peek().add(Code.pc - 2);
 	}
 	
+	public void visit(FactorielFactor factorielFactor) {
+		NumConst constant = (NumConst) factorielFactor.getConst();
+		int value = constant.getN1();
+		
+		for(int i = 0; i < value - 1; i++) {
+			Code.put(Code.dup);
+			Code.loadConst(1);
+			Code.put(Code.sub);
+		}
+		
+		for(int i = 0; i < value - 1; i++) {
+			Code.put(Code.mul);
+		}
+	}
+	
 	public void visit(BoolConst boolConst) {
 		if(!(boolConst.getParent() instanceof OptArg) ) {
 			Obj constObj = Tab.insert(Obj.Con, "$", boolConst.struct);

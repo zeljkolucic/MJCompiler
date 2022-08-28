@@ -52,7 +52,7 @@ terminal PROGRAM, READ, PRINT, CONST;
 terminal IF, ELSE, FOR, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
 terminal SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; 
-terminal COALESCE, QUESTION_MARK, COLON;
+terminal COALESCE, QUESTION_MARK, COLON, EXCLAMATION_MARK;
 
 terminal Integer NUM_CONST;
 terminal String CHAR_CONST;
@@ -321,6 +321,8 @@ MulFacList ::= 	(MulopFactor) MulFacList Mulop Factor
 				;						
 			
 Factor ::= 	(ConstFactor) Const:constant
+			|
+			(FactorielFactor) Const:constant EXCLAMATION_MARK
 			|
 			(ExprFactor) LPAREN Expr RPAREN
 			|

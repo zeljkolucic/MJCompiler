@@ -1007,6 +1007,19 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(ConstFactor constFactor) {
 		constFactor.struct = constFactor.getConst().struct;
 	}
+	
+	public void visit(FactorielFactor factorielFactor) {
+		Struct constType = factorielFactor.getConst().struct;
+		if(constType != Tab.intType) {
+			errorDetected = true;
+			report_error("Greska [" + factorielFactor.getLine() + "]: Operator ! se moze primeniti samo na konstante tipa int.", null);
+			factorielFactor.struct = Tab.noType;
+			
+		} else {
+			factorielFactor.struct = constType;
+			
+		}
+	}
 
 	public void visit(ExprFactor exprFactor) {
 		exprFactor.struct = exprFactor.getExpr().struct;
