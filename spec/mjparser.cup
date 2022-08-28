@@ -49,7 +49,7 @@ scan with {:
 
 
 terminal PROGRAM, READ, PRINT, CONST;
-terminal IF, ELSE, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
+terminal IF, ELSE, FOR, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
 terminal SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; 
 
@@ -67,9 +67,11 @@ nonterminal ActPars, ActualParamList;
 nonterminal Assignop, Relop, Addop, Mulop;
 nonterminal Parameters, OptArgs, OptArg;
 nonterminal DoWhileStatementBegin, IfConditionBegin, ThenStatementEnd, Or, WhileBegin, WhileStatementBegin, WhileStatementEnd;
+nonterminal ForLoopBegin, ForLoopEnd, ForInitialization, ForIteration, ForIterationBegin, ForConditionBegin;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition, WhileCondition;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ForCondition;
 
 /* Program */
 
@@ -239,8 +241,24 @@ Matched ::=		(DesignatorStmt) DesignatorStatement SEMI
 				|
 				(WhileStatement) WhileStatementBegin LPAREN WhileCondition RPAREN Matched WhileStatementEnd
 				|
+				(ForLoop) ForLoopBegin LPAREN ForInitialization ForConditionBegin ForCondition ForIterationBegin ForIteration RPAREN Matched ForLoopEnd 
+				|
 				(Stmt) LBRACE StatementList RBRACE
 				;
+				
+ForLoopBegin ::=	(ForLoopBegin) FOR;
+
+ForLoopEnd ::=	(ForLoopEnd) /* epsilon */;	
+
+ForInitialization ::=	(ForInitialization) DesignatorStatement SEMI;	
+
+ForConditionBegin ::= (ForConditionBegin) /* epsilon */;
+
+ForCondition ::= (ForCondition) Condition SEMI;	
+
+ForIterationBegin ::= (ForIterationBegin) /* epsilon */;
+
+ForIteration ::= (ForIteration) DesignatorStatement;
 				
 WhileStatementBegin ::= (WhileStatementBegin) WHILE;				
 

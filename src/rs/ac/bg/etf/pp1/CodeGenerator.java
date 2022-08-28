@@ -20,7 +20,11 @@ public class CodeGenerator extends VisitorAdaptor {
 	private int mainPc;
 	private LinkedList<Method> methods;
 	private Stack<Integer> numberOfActualArgumentsStack = new Stack<Integer>();
-//	private int numberOfActualArguments = 0;
+	private Stack<Loop> insideLoop = new Stack<Loop>();
+	
+	enum Loop {
+		DO_WHILE, WHILE, FOR
+	}
 	
 	private static final int MAX_DATA_SIZE = 8192;
 	
@@ -142,8 +146,17 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(ContinueStatement continueStatement) {
-		Code.putJump(0); 		
-		continueStatementAddressesToPatch.peek().add(Code.pc - 2);
+		if(insideLoop.peek() == Loop.DO_WHILE) {
+			Code.putJump(0); 		
+			continueStatementAddressesToPatch.peek().add(Code.pc - 2);
+			
+		} else if(insideLoop.peek() == Loop.WHILE) {
+			Code.putJump(whileStatementAddressesToPatch.peek());
+		
+		} else if(insideLoop.peek() == Loop.FOR) {
+			Code.putJump(forLoopEndAddressesToPatch.peek());
+			
+		}
 	}
 	
 	public void visit(ReturnStatement returnStatement) {
@@ -164,6 +177,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	private Stack<List<Integer>> continueStatementAddressesToPatch = new Stack<List<Integer>>(); 	
 	
 	public void visit(DoWhileStatementBegin doWhileStatementBegin) {
+		insideLoop.push(Loop.DO_WHILE);
+		
 		orConditionAddressesToPatch.push(new ArrayList<Integer>());
 		andConditionAddressesToPatch.push(new ArrayList<Integer>());
 		
@@ -177,6 +192,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(WhileStatementBegin whileStatementBegin) {
+		insideLoop.push(Loop.WHILE);
+		
 		orConditionAddressesToPatch.push(new ArrayList<Integer>());
 		andConditionAddressesToPatch.push(new ArrayList<Integer>());
 		
@@ -215,6 +232,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(WhileStatementEnd whileStatementEnd) {
+		insideLoop.pop();
+		
 		/* The condition consists of multiple conditions which are separated 
 		 * with `or` operator, and if any of them is `true` there has to be
 		 * a jump to the beginning of the `do-while` block which is achieved
@@ -289,6 +308,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(DoWhileStatement doWhileStatement) {
+		insideLoop.pop();
+		
 		/* At the end of the `do-while` loop there are no more addresses 
 		 * to be patched and the current scope can be restored to previous
 		 * state. 
@@ -300,6 +321,95 @@ public class CodeGenerator extends VisitorAdaptor {
 		breakStatementAddressesToPatch.pop();
 		continueStatementAddressesToPatch.pop();
 	}
+	
+	/* For Loop */
+	 
+	private Stack<Integer> forLoopEndAddressesToPatch = new Stack<Integer>();
+	private Stack<Integer> forLoopIterationBlockAddressesToPatch = new Stack<Integer>();
+	private Stack<List<Integer>> forLoopConditionAddressesToPatch = new Stack<List<Integer>>();
+	
+	public void visit(ForLoopBegin forLoopBegin) {
+		insideLoop.push(Loop.FOR);
+		
+		breakStatementAddressesToPatch.push(new ArrayList<Integer>());
+		continueStatementAddressesToPatch.push(new ArrayList<Integer>());
+		
+		orConditionAddressesToPatch.push(new ArrayList<Integer>());
+		andConditionAddressesToPatch.push(new ArrayList<Integer>());
+		forLoopConditionAddressesToPatch.push(new ArrayList<Integer>());
+	}	
+	
+	public void visit(ForLoop forLoop) {
+		for(int addressToPatch: andConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		andConditionAddressesToPatch.pop();
+		orConditionAddressesToPatch.pop();
+		
+		breakStatementAddressesToPatch.pop();
+		continueStatementAddressesToPatch.pop();
+		
+		forLoopEndAddressesToPatch.pop();
+		forLoopIterationBlockAddressesToPatch.pop();
+		forLoopConditionAddressesToPatch.pop();
+	}
+	
+	public void visit(ForConditionBegin forConditionBegin) {
+		/* After each iteration of the `for` loop, iteration block is next
+		 * to be executed, after which the condition needs to be checked again.
+		 */
+		forLoopIterationBlockAddressesToPatch.push(Code.pc);
+	}
+	
+	public void visit(ForCondition forCondition) {
+		/*  After the condition is checked there must be an
+		 * unconditional jump to the beginning of the `for` loop
+		 * body block. 
+		 */
+		Code.putJump(0);
+		forLoopConditionAddressesToPatch.peek().add(Code.pc - 2);
+	}
+	
+	public void visit(ForIterationBegin forIterationBegin) {
+		/* At the end of the `for` loop block iteration block  
+		 *  is next to be executed.
+		 */
+		forLoopEndAddressesToPatch.push(Code.pc);
+	}
+	
+	public void visit(ForIteration forIteration) {
+		/* After the iteration block is executed, there must an unconditional
+		 * jump to the condition check.
+		 */
+		Code.putJump(forLoopIterationBlockAddressesToPatch.peek());
+		
+		/* This is the end of the iteration block and more importantly
+		 * beginning of the `for` loop body.
+		 */
+		for(int addressToPatch: forLoopConditionAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		forLoopConditionAddressesToPatch.peek().clear();
+	}
+	
+	public void visit(ForLoopEnd forLoopEnd) {
+		insideLoop.pop();
+		
+		/* At the end of the `for` loop block iteration block  
+		 *  is next to be executed.
+		 */
+		Code.putJump(forLoopEndAddressesToPatch.peek());
+		
+		for(int addressToPatch: breakStatementAddressesToPatch.peek()) {
+			Code.fixup(addressToPatch);
+		}
+		
+		breakStatementAddressesToPatch.peek().clear();
+	}
+	
+	/* Designator Statements */
 	
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {
 		Designator designator =	designatorAssignStatement.getDesignator();

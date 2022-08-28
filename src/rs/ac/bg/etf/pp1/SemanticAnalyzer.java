@@ -41,6 +41,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private Obj currentMethod = null;
 	private boolean returnFound = false;
 	private int doWhileNestedLevel = 0;
+	private int forLoopNestedLevel = 0;
 	private int numberOfLocalVariables = 0;
 	private int numberOfGlobalVariables = 0;
 
@@ -393,18 +394,18 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 
 	public void visit(BreakStatement breakStatement) {
-		if (doWhileNestedLevel == 0) {
+		if (doWhileNestedLevel == 0 && forLoopNestedLevel == 0) {
 			errorDetected = true;
 			report_error("Greska [" + breakStatement.getLine()
-					+ "]: Iskaz break se moze koristiti samo unutar do-while petlje.", null);
+					+ "]: Iskaz break se moze koristiti samo unutar do-while, while i for petlje.", null);
 		}
 	}
 
 	public void visit(ContinueStatement continueStatement) {
-		if (doWhileNestedLevel == 0) {
+		if (doWhileNestedLevel == 0 && forLoopNestedLevel == 0) {
 			errorDetected = true;
 			report_error("Greska [" + continueStatement.getLine()
-					+ "]: Iskaz continue se moze koristiti samo unutar do-while petlje.", null);
+					+ "]: Iskaz continue se moze koristiti samo unutar do-while , while i for petlje.", null);
 		}
 	}
 
@@ -477,6 +478,20 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	public void visit(DoWhileCondition doWhileCondition) {
 		doWhileCondition.struct = doWhileCondition.getCondition().struct;
+	}
+	
+	/* For Loop */
+	
+	public void visit(ForLoopBegin forLoopBegin) {
+		forLoopNestedLevel++;
+	}
+	
+	public void visit(ForLoopEnd forLoopEnd) {
+		forLoopNestedLevel--;
+	}
+	
+	public void visit(ForCondition forCondition) {
+		forCondition.struct = forCondition.getCondition().struct;
 	}
 
 	public void visit(DesignatorAssignStatement designatorAssignStatement) {

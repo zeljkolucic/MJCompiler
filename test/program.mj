@@ -1,20 +1,29 @@
 program MJProgram
-	int x; int y;
+	int x; int i;
 {
 	int f(int x, int y) {
 		return x + y;
 	}
 	
 	void main() {
-		x = 0;
-		
-		while(x < 3) {
-			y = 0;
-			x++;
-			while(y < 3) {
+		for(x = 0; x < 5; x++) {
+			i = 0;
+			
+			if(x == 2)
+				continue;
+				
+			while(i < 3) {
+				i++;
+				
+				if(i == 3)
+					continue;
+					
 				print(x);
-				y++;
 			}
+			
+				
+			if(x == 3) 
+				break;	
 		}
 	}
 }
