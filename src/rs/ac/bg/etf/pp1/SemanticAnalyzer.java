@@ -872,13 +872,35 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			designatorIdentArray.obj = Tab.noObj;
 		}
 	}
+	
+	public void visit(JustExpr justExpr) {
+		justExpr.struct = justExpr.getExpression().struct;
+	}
+	
+	public void visit(CoalesceExpr coalesceExpr) {
+		coalesceExpr.struct = coalesceExpr.getCoalesceExpression().struct;
+	}
+	
+	public void visit(CoalesceExpression coalesceExpression) {
+		Struct te = coalesceExpression.getExpression().struct;
+		Struct t = coalesceExpression.getExpr().struct;
+		
+		if(!te.compatibleWith(t)) {
+			errorDetected = true;
+			report_error("Greska [" + coalesceExpression.getLine() + "]: Izrazi nisu istog tipa.", null);
+			coalesceExpression.struct = Tab.noType;
+			
+		} else {
+			coalesceExpression.struct = te;
+		}
+	}
 
 	public void visit(AddOpTermExpr addOpTermExpr) {
 		/*
 		 * Both expressions need to be of same type, that is type `int` otherwise there
 		 * has been an error.
 		 */
-		Struct te = addOpTermExpr.getExpr().struct;
+		Struct te = addOpTermExpr.getExpression().struct;
 		Struct t = addOpTermExpr.getTerm().struct;
 
 		if (te.compatibleWith(t) && te == Tab.intType) {

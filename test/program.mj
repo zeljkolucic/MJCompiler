@@ -6,24 +6,9 @@ program MJProgram
 	}
 	
 	void main() {
-		for(x = 0; x < 5; x++) {
-			i = 0;
-			
-			if(x == 2)
-				continue;
-				
-			while(i < 3) {
-				i++;
-				
-				if(i == 3)
-					continue;
-					
-				print(x);
-			}
-			
-				
-			if(x == 3) 
-				break;	
-		}
+		i = 0;
+		x = i + 0 ?? 0 ?? 3;
+		
+		print(x);
 	}
 }

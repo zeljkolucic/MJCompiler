@@ -51,6 +51,8 @@ import java_cup.runtime.Symbol;
 
 "void" 		{ return new_symbol(sym.VOID, yytext()); }
 
+"??"		{ return new_symbol(sym.COALESCE, yytext()); }
+"?"			{ return new_symbol(sym.QUESTION_MARK, yytext()); }
 "++"		{ return new_symbol(sym.INC, yytext()); }
 "--"		{ return new_symbol(sym.DEC, yytext()); }
 "+"			{ return new_symbol(sym.PLUS, yytext()); }

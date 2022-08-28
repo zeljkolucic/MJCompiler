@@ -52,6 +52,7 @@ terminal PROGRAM, READ, PRINT, CONST;
 terminal IF, ELSE, FOR, DO, WHILE, BREAK, CONTINUE, RETURN, NEW, VOID;
 terminal EQUAL, NOTEQUAL, LESS_OR_EQUAL, GREATER_OR_EQUAL, LESS, GREATER, AND, OR, ASSIGN, INC, DEC, PLUS, MINUS, MUL, DIV, MOD;
 terminal SEMI, COMMA, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; 
+terminal COALESCE, QUESTION_MARK;
 
 terminal Integer NUM_CONST;
 terminal String CHAR_CONST;
@@ -71,7 +72,7 @@ nonterminal ForLoopBegin, ForLoopEnd, ForInitialization, ForIteration, ForIterat
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Term, Factor, Const, MulFacList, CondFact, CondTerm, Condition, IfCondition, ActPar, DoWhileCondition, WhileCondition;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct ForCondition;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ForCondition, CoalesceExpression, Expression, ExpressionList;
 
 /* Program */
 
@@ -285,14 +286,20 @@ DesignatorStatement ::=	(DesignatorAssignStatement) Designator:designator Assign
 Designator ::=	(DesignatorIdent) IDENT 
 				|
 				(DesignatorIdentArray) Designator LBRACKET Expr RBRACKET
-				;		
+				;	
 				
-Expr ::=	(AddOpTermExpr) Expr:te Addop Term:t
+Expr ::= 	(JustExpr) Expression 
 			|
-			(NegTermExpr) MINUS Term
-			|
-			(PosTermExpr) Term:term
-			;
+			(CoalesceExpr) CoalesceExpression;									
+				
+Expression ::=	(AddOpTermExpr) Expression:te Addop Term:t
+				|
+				(NegTermExpr) MINUS Term
+				|
+				(PosTermExpr) Term:term
+				;
+			
+CoalesceExpression ::=	(CoalesceExpression) Expression:e1 COALESCE Expr:e2; 			
 			
 Term ::=	(Term) Factor:f MulFacList;
 

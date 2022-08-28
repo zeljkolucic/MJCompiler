@@ -7,6 +7,8 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
+import com.sun.org.apache.bcel.internal.generic.DUP2_X1;
+
 import rs.ac.bg.etf.pp1.SemanticAnalyzer.Method;
 import rs.ac.bg.etf.pp1.CounterVisitor.*;
 import rs.ac.bg.etf.pp1.ast.*;
@@ -554,6 +556,26 @@ public class CodeGenerator extends VisitorAdaptor {
 				Code.put(Code.baload);
 			}
 		}
+	}
+	
+	public void visit(CoalesceExpression coalesceExpression) {
+		Code.put(Code.dup_x1);
+		Code.put(Code.pop);
+		Code.put(Code.dup);
+		Code.loadConst(0);
+		
+		Code.putFalseJump(Code.ne, 0);
+		int addressToPatch = Code.pc - 2;
+		
+		// If the first expression is not equal to 0, then the second needs to be popped from the stack
+		Code.put(Code.dup_x1);
+		Code.put(Code.pop);
+		Code.put(Code.pop);	
+		Code.putJump(Code.pc + 4); // Size of the `jmp` instruction is 3 bytes, and syze of the `pop` instruction is 1 byte
+		
+		// If the first expression is equal to 0, then it needs to be popped from the stack
+		Code.fixup(addressToPatch);
+		Code.put(Code.pop);
 	}
 	
 	public void visit(AddOpTermExpr addOpTermExpr) {
