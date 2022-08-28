@@ -1,12 +1,25 @@
 program MJProgram
-	int x; int i; bool condition;
+	int x; int i; int array[];
 {
 	int f(int x, int y) {
 		return x + y;
 	}
 	
 	void main() {
-		x = 3!;
+		array = new int[5];
+		
+		array[0] = 1;
+		array[1] = 2;
+		array[2] = 3;
+		
+		x = len(array);
 		print(x);
+		
+		array^2;
+		
+		print(array[0]);
+		print(array[1]);
+		print(array[2]);
+		
 	}
 }

@@ -667,6 +667,21 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			// report_info(designatorFunctionCall.getDesignator().toString(""), null);
 		}
 	}
+	
+	public void visit(DesignatorArrayStatement designatorArrayStatement) {
+		Designator designator = designatorArrayStatement.getDesignator();
+		Const constant = designatorArrayStatement.getConst();
+		
+		if(designator.obj.getType().getKind() != Struct.Array) {
+			errorDetected = true;
+			report_error("Greska [" + designatorArrayStatement.getLine() + "]: Operator ^ se moze primeniti samo na niz.", null);
+		}
+		
+		if(!(constant instanceof NumConst)) {
+			errorDetected = true;
+			report_error("Greska [" + designatorArrayStatement.getLine() + "]: Konstanta mora biti tipa int.", null);
+		}
+	}
 
 	public void visit(FunctionCall functionCall) {
 		Obj function = functionCall.getDesignator().obj;

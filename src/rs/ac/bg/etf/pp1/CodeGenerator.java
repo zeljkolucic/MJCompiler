@@ -530,6 +530,36 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(DesignatorArrayStatement designatorArrayStatement) {
+		NumConst constant = (NumConst) designatorArrayStatement.getConst();
+		Designator designator = designatorArrayStatement.getDesignator();
+		int value = constant.getN1();
+		
+		Code.put(Code.pop);
+		Code.put(Code.arraylength);
+		
+		int begginingOfLoop = Code.pc;
+		Code.loadConst(1);
+		Code.put(Code.sub);
+		
+		Code.put(Code.dup);
+		Code.loadConst(0);
+		Code.putFalseJump(Code.ge, 0);
+		int addressToPatch = Code.pc - 2;
+		
+		Code.load(designator.obj);
+		Code.put(Code.dup2);
+		Code.put(Code.dup2);
+		Code.put(Code.pop);
+		Code.put(Code.aload);
+		Code.loadConst(value);
+		Code.put(Code.mul);
+		Code.put(Code.astore);
+		Code.putJump(begginingOfLoop);
+		Code.fixup(addressToPatch);
+		Code.put(Code.pop);
+	}
+	
 	public void visit(DesignatorIdent designatorIdent) {
 		SyntaxNode parent = designatorIdent.getParent();
 		
